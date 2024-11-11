@@ -87,7 +87,7 @@ int main(void)
 {
  80001d4:	b480      	push	{r7}
  80001d6:	af00      	add	r7, sp, #0
-	// enable port h
+	// enable port A
 	RCC_AHB1_BASE |= (1<<0);
  80001d8:	4b0f      	ldr	r3, [pc, #60]	@ (8000218 <main+0x44>)
  80001da:	681b      	ldr	r3, [r3, #0]

@@ -16,58 +16,30 @@
  ******************************************************************************
  */
 
-#include <stdint.h>
+#include <std_type.h>
 #include <stdio.h>
-
-#define RCC_BASE 					0x40023800
-#define RCC_AHB1 					0x30
-#define REG(base, offset) 			((*((volatile unsigned int *)(base + offset))))
-#define RCC_AHB1_BASE				REG(RCC_BASE,RCC_AHB1)
-#define SET_BIT(var,bit)			var |= (1<<bit)
-#define CLR_BIT(var,bit)			var &= ~(1<<bit)
-#define GPIOA_ADDRESS						0x40020000
-#define GPIOB_ADDRESS						0x40020400
-#define GPIOC_ADDRESS						0x40020800
-#define GPIOD_ADDRESS						0x40020C00
-#define GPIOE_ADDRESS						0x40021000
-
-#define OFFSET_MODER				0x00
-#define OFFSET_OTYPER				0x04
-#define OFFSET_OSPEEDR				0x08
-#define OFFSET_PUPDR				0x0C
-#define OFFSET_IDF					0x10
-#define OFFSET_ODR					0x14
-#define OFFSET_BSRR					0x18
-#define OFFSET_LCKR					0x1C
-#define OFFSET_AFRL					0x20
-#define OFFSET_AFRH					0x24
-
-
-typedef struct
-{
-	volatile uint32_t MODER;
-	volatile uint32_t OTYPER;
-	volatile uint32_t OSPEEDR;
-	volatile uint32_t PUPDR;
-	volatile uint32_t IDR;
-	volatile uint32_t ODR;
-	volatile uint32_t BSRR;
-	volatile uint32_t LCKR;
-	volatile uint32_t AFRL;
-	volatile uint32_t AFRH;
-}GPIO_t;
-
-#define GPIOA 			((volatile GPIO_t*)GPIOA_ADDRESS)
+#include "bit_mat.h"
+#include "ETP_STM32F401_RCC.h"
 
 int main(void)
 {
-	// enable port A
-	RCC_AHB1_BASE |= (1<<0);
-	GPIOA->MODER |= (1<<10);
-	GPIOA->OTYPER &= (1<<0);
-	GPIOA->OSPEEDR |= (3<<10);
-	GPIOA->BSRR |= (1<<21);
-
+	ETP_RCC_AHB1_Clock(RCC_GPIOA);
+	ETP_RCC_AHB1_Clock(RCC_GPIOC);
+	PIN_GPIOA->MODER |= (1<<10);
+	PIN_GPIOA->OTYPER &= (1<<0);
+	PIN_GPIOA->OSPEEDR |= (3<<10);
+	SET_BIT(PIN_GPIOA->BSRR,5);
+	PIN_GPIOC->MODER &= (3<<26);
     /* Loop forever */
-	for(;;);
+	while(1)
+	{
+		if(GET_BIT(PIN_GPIOC->IDR,13))
+		{
+			PIN_GPIOA->BSRR |= (1<<5);
+		}
+		else
+		{
+			PIN_GPIOA->BSRR |= (1<<21);
+		}
+	}
 }

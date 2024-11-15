@@ -15,7 +15,7 @@
 #define RCC_GPIOE				(0x04U)
 #define RCC_GPIOH				(0x07U)
 
-
+#define RCC_CLOCK_ENABLE			((volatile RCC_Config*)RCC_BASE_ADDRESS)
 #define RCC_BASE_ADDRESS	 					0x40023800
 
 typedef struct 
@@ -51,11 +51,25 @@ typedef struct
 }RCC_Config;
 
 
-#define RCC_CLOCK_ENABLE			((volatile RCC_Config*)RCC_BASE_ADDRESS)
+
 
 void ETP_RCC_AHB1_Clock(u8 periph)
 {
 	RCC_CLOCK_ENABLE->RCC_AHB1ENR |= (1<<periph);
+}
+
+void ETP_RCC_AHB2_Enable(u8 periph)
+{
+	RCC_CLOCK_ENABLE->RCC_AHB2ENR |= (1<<periph);
+}
+
+void ETP_RCC_APB1_Enable(u8 periph)
+{
+	RCC_CLOCK_ENABLE->RCC_APB1ENR |= (1<<periph);
+}
+void ETP_RCC_APB2_Enable(u8 periph)
+{
+	RCC_CLOCK_ENABLE->RCC_APB2ENR |= (1<<periph);
 }
 
 

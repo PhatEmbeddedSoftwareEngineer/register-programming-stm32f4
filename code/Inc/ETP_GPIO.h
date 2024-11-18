@@ -11,8 +11,7 @@ typedef struct
 	volatile u32 ODR;
 	volatile u32 BSRR;
 	volatile u32 LCKR;
-	volatile u32 AFRL;
-	volatile u32 AFRH;
+	volatile u32 AFR[2];
 }GPIO_t;
 
 typedef struct 
@@ -33,6 +32,8 @@ typedef struct
 
 // #define RCC_AHB1_ADDRESS_OFFSET 					0x30
 // #define REG(base, offset) 			((*((volatile unsigned int *)(base + offset))))
+
+
 
 #define GPIOA_ADDRESS						0x40020000
 #define GPIOB_ADDRESS						0x40020400
@@ -59,6 +60,11 @@ typedef struct
 #define HIGH_SPEED          (0x02U)
 #define MAX_SPEED           (0x03U)
 
+#define NO_PUPD             0x00
+#define PULL_UP             0x01
+#define PULL_DOWN           0x02
+#define RESERVED            0x03
+
 #define PIN_0               0
 #define PIN_1               1
 #define PIN_2               2
@@ -77,15 +83,47 @@ typedef struct
 #define PIN_15              15
 
 
-void Etp_output(GPIO_Typedef *Init)
+void ETP_Output(GPIO_Typedef *Init)
 {
     Init->pGPIO->MODER &= ~(0x03 << (Init->GPIO_Config.pinNumber)*2);
     Init->pGPIO->MODER |= (Init->GPIO_Config.mode << (Init->GPIO_Config.pinNumber)*2);
     Init->pGPIO->OTYPER &= (Init->GPIO_Config.otype << (Init->GPIO_Config.pinNumber)*2);
     Init->pGPIO->OSPEEDR &= ~(0x03 << (Init->GPIO_Config.pinNumber)*2);
     Init->pGPIO->OSPEEDR |= (Init->GPIO_Config.speed << (Init->GPIO_Config.pinNumber)*2);
+    Init->pGPIO->PUPDR &= ~(0x03 << (Init->GPIO_Config.pinNumber)*2);
+    Init->pGPIO->PUPDR |= (Init->GPIO_Config.pull_up_down << (Init->GPIO_Config.pinNumber)*2);
+
 }
 
+void ETP_GPIO_WritePin(GPIO_t *PORT,u8 pin,u8 state)
+{
+    switch(state)
+    {
+        case GPIO_PIN_RESET:
+            PORT->ODR &= ~(1<<pin);
+            break;
+        case GPIO_PIN_SET:  
+            PORT->ODR |= (1<<pin);
+            break;
+        default:
+            break;
+    }
+}
+
+u8 ETP_GPIO_ReadPin(GPIO_t *PORT, u8 pin)
+{
+    return ((PORT->IDR>>pin)&0x01);
+}
+
+void ETP_GPIO_TogglePin(GPIO_t* PORT, u8 pin)
+{
+    PORT->ODR ^= (1<<pin);
+}
+
+void delay()
+{
+    for(int i=0;i<1000000;i++);
+}
 
 
 

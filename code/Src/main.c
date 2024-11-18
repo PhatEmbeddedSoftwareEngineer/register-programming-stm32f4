@@ -32,25 +32,14 @@ int main(void)
 	gpio.GPIO_Config.pinNumber = PIN_5;
 	gpio.GPIO_Config.otype = TYPE_OUTPUT_PUPL;
 	gpio.GPIO_Config.speed = HIGH_SPEED;
-	Etp_output(&gpio);
-	SET_BIT(GPIOA->BSRR,5);
-	//Etp_output(GPIOA,PIN_5,OUTPUT);
-
-	// GPIOA->MODER |= (1<<10);
-	// GPIOA->OTYPER &= (0<<10);
-	// GPIOA->OSPEEDR |= (3<<10);
-	// SET_BIT(GPIOA->BSRR,5);
-	// PIN_GPIOC->MODER &= (3<<26);
+	gpio.GPIO_Config.pull_up_down = NO_PUPD;
+	ETP_Output(&gpio);
+	ETP_RCC_SetSystemClock16MHZ();
+	ETP_GPIO_WritePin(GPIOA,PIN_5,GPIO_PIN_SET);
     /* Loop forever */
 	while(1)
 	{
-		// if(GET_BIT(PIN_GPIOC->IDR,13))
-		// {
-		// 	PIN_GPIOA->BSRR |= (1<<5);
-		// }
-		// else
-		// {
-		// 	PIN_GPIOA->BSRR |= (1<<21);
-		// }
+		// ETP_GPIO_TogglePin(GPIOA,PIN_5);
+		// delay();
 	}
 }

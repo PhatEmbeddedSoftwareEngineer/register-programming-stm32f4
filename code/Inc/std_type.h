@@ -18,9 +18,5 @@ typedef unsigned short			u16;
 typedef unsigned long			u32;
 typedef unsigned long long		u64;
 
-#define GPIO_PIN_SET            0x01
-#define GPIO_PIN_RESET          0x00
-
-
 
 #endif

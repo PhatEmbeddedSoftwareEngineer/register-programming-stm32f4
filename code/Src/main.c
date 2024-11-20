@@ -26,15 +26,22 @@ int main(void)
 {
 	ETP_RCC_AHB1_Clock(RCC_GPIOA);
 	ETP_RCC_AHB1_Clock(RCC_GPIOC);
-	GPIO_Typedef gpio;
-	gpio.pGPIO=GPIOA;
-	gpio.GPIO_Config.mode = OUTPUT;
-	gpio.GPIO_Config.pinNumber = PIN_5;
-	gpio.GPIO_Config.otype = TYPE_OUTPUT_PUPL;
-	gpio.GPIO_Config.speed = HIGH_SPEED;
-	gpio.GPIO_Config.pull_up_down = NO_PUPD;
-	ETP_Output(&gpio);
-	ETP_RCC_SetSystemClock16MHZ();
+	GPIO_Config_t gpio[]={
+		{GPIOA,PIN_6,OUTPUT,HIGH_SPEED,TYPE_OUTPUT_PUPL},
+		{GPIOA,PIN_5,OUTPUT,HIGH_SPEED,TYPE_OUTPUT_PUPL},
+
+	};
+	// GPIO_Typedef gpio;
+	// gpio.pGPIO=GPIOA;
+	// gpio.GPIO_Config.mode = OUTPUT;
+	// gpio.GPIO_Config.pinNumber = PIN_5;
+	// gpio.GPIO_Config.otype = TYPE_OUTPUT_PUPL;
+	// gpio.GPIO_Config.speed = HIGH_SPEED;
+	// gpio.GPIO_Config.pull_up_down = NO_PUPD;
+	// ETP_Output(&gpio);
+	for(int i=0;i<sizeof(gpio)/sizeof(gpio[0]);i++)
+		ETP_Output(&gpio[i]);
+	ETP_RCC_SetSystemClockByPLL84MHZ();
 	ETP_GPIO_WritePin(GPIOA,PIN_5,GPIO_PIN_SET);
     /* Loop forever */
 	while(1)

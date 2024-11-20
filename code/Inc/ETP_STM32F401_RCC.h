@@ -15,8 +15,8 @@
 #define RCC_GPIOE				(0x04U)
 #define RCC_GPIOH				(0x07U)
 
-#define RCC_CLOCK_ENABLE			((volatile RCC_Config*)RCC_BASE_ADDRESS)
 #define RCC_BASE_ADDRESS	 					0x40023800
+#define RCC_CLOCK_ENABLE			((volatile RCC_Config*)RCC_BASE_ADDRESS)
 
 #define HSI_PLL_CLOCK       FALSE
 #define HSE_PLL_CLOCK       TRUE
@@ -63,9 +63,6 @@ typedef struct
 	volatile u32 RCC_DCKCFGR;
 }RCC_Config;
 
-
-
-
 void ETP_RCC_AHB1_Clock(u8 periph)
 {
 	RCC_CLOCK_ENABLE->RCC_AHB1ENR |= (1<<periph);
@@ -88,8 +85,8 @@ void ETP_RCC_APB2_Enable(u8 periph)
 void ETP_RCC_SetSystemClockByPLL84MHZ()
 {
 #if HSE_PLL_CLOCK
-	RCC_CLOCK_ENABLE->RCC_CR |= (1<<16);
-    while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<17)));
+	RCC_CLOCK_ENABLE->RCC_CR |= (1<<16); // HSEON
+    while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<17))); // HSERDY
 	// ahb1 prescaler =/1 ,, abp1 prescaler = /2, apb2 prescaler = /1
 	RCC_CLOCK_ENABLE->RCC_CFGR &= (0<<7);
 	RCC_CLOCK_ENABLE->RCC_CFGR |= (4<<10);
@@ -108,8 +105,8 @@ void ETP_RCC_SetSystemClockByPLL84MHZ()
     while(!(RCC_CLOCK_ENABLE->RCC_CR &(1<<25)));
 	// SW
 	RCC_CLOCK_ENABLE->RCC_CFGR |= (2<<0);
-	//SWS
-	while(!((RCC_CLOCK_ENABLE->RCC_CFGR & (1<<2)) == 0 && ((RCC_CLOCK_ENABLE->RCC_CFGR)&(1<<1))));
+	//SWS bit3 = 1, bit2 = 0 // 1000
+	while(!(((RCC_CLOCK_ENABLE->RCC_CFGR & (1<<2))==0)  && ((RCC_CLOCK_ENABLE->RCC_CFGR)&(1<<3))));
 #else 
 	RCC_CLOCK_ENABLE->RCC_CR |= (1<<0);
     while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<1)));
@@ -140,18 +137,18 @@ void ETP_RCC_SetSystemClock8MHZ()
 {
     RCC_CLOCK_ENABLE->RCC_CR |= (1<<16);
     while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<17)));
-    RCC_CLOCK_ENABLE->RCC_CFGR &=~ (7<13);
-    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(7<<10);
-    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(15<<10);
+    RCC_CLOCK_ENABLE->RCC_CFGR &=~ (1<<7);// AHB not divided
+    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(1<<12); // APB1
+    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(1<<15); // APB2
 }
 
 void ETP_RCC_SetSystemClock16MHZ()
 {
     RCC_CLOCK_ENABLE->RCC_CR |= (1<<0);
     while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<1)));
-    RCC_CLOCK_ENABLE->RCC_CFGR &=~ (7<13);
-    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(7<<10);
-    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(15<<10);
+    RCC_CLOCK_ENABLE->RCC_CFGR &=~ (1<<7);// AHB not divided
+    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(1<<12); // APB1
+    RCC_CLOCK_ENABLE->RCC_CFGR &= ~(1<<15); // APB2
 }
 
 

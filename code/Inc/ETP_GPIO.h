@@ -88,7 +88,6 @@ void ETP_Output(GPIO_Config_t *config)
     gpio.pGPIO->MODER |= (OUTPUT << (config->pinNumber)*2);
     gpio.pGPIO->OTYPER |= (TYPE_OUTPUT_PUPL << (config->pinNumber));
     gpio.pGPIO->OSPEEDR |= (MAX_SPEED << (config->pinNumber)*2);
-    
 }
 
 void ETP_GPIO_WritePin(GPIO_t *PORT,u8 pin,u8 state)

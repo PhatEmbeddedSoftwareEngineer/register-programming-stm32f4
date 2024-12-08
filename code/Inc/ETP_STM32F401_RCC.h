@@ -16,7 +16,7 @@
 #define RCC_GPIOH				(0x07U)
 
 #define RCC_BASE_ADDRESS	 					0x40023800
-#define RCC_CLOCK_ENABLE			((volatile RCC_Config*)RCC_BASE_ADDRESS)
+#define RCC_CLOCK_ENABLE			((RCC_Config*)RCC_BASE_ADDRESS)
 
 #define HSI_PLL_CLOCK       FALSE
 #define HSE_PLL_CLOCK       TRUE
@@ -87,10 +87,11 @@ void ETP_RCC_SetSystemClockByPLL84MHZ()
 #if HSE_PLL_CLOCK
 	RCC_CLOCK_ENABLE->RCC_CR |= (1<<16); // HSEON
     while(!(RCC_CLOCK_ENABLE->RCC_CR & (1<<17))); // HSERDY
+	
 	// ahb1 prescaler =/1 ,, abp1 prescaler = /2, apb2 prescaler = /1
-	RCC_CLOCK_ENABLE->RCC_CFGR &= (0<<7);
-	RCC_CLOCK_ENABLE->RCC_CFGR |= (4<<10);
-	RCC_CLOCK_ENABLE->RCC_CFGR |= (0<<15);
+	RCC_CLOCK_ENABLE->RCC_CFGR &= (0<<7);/// AHB
+	RCC_CLOCK_ENABLE->RCC_CFGR |= (4<<10); // APB1
+	RCC_CLOCK_ENABLE->RCC_CFGR |= (0<<15); // APB2
 	// PLL_Q == 2
 	RCC_CLOCK_ENABLE->RCC_PLLCFGR |= (0x02<<24);
 	// PLL_M 

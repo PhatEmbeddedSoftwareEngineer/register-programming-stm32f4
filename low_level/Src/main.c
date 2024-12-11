@@ -1,63 +1,7 @@
 #include <stdint.h>
 #include "define.h"
-
-typedef struct 
-{
-	volatile uint32_t GPIO_MODER; // 0x00
-	volatile uint32_t GPIO_OTYPER; // 0x04
-	volatile uint32_t GPIO_OSPEEDR; // 0x08
-	volatile uint32_t GPIO_PUPDR; // 0x0C
-	volatile uint32_t GPIO_IDR; // 0x10
-	volatile uint32_t GPIO_ODR; // 0x14
-	volatile uint32_t GPIO_BSRR; // 0x18
-	volatile uint32_t GPIO_LCKR; // 0x1C
-	volatile uint32_t GPIO_AFR[2]; // 0x20 - 0x24  // 0 is low and 1 is high 
-}GPIO_Typedef;
-
-typedef struct 
-{
-	volatile uint32_t RCC_CR; 
-	volatile uint32_t RCC_PLLCFGR;
-	volatile uint32_t RCC_CFGR;
-	volatile uint32_t RCC_CIR;
-	volatile uint32_t RCC_AHB1RSTR;
-	volatile uint32_t RCC_AHB2RSTR;
-	uint32_t RESERVED[2];
-	volatile uint32_t RCC_APB1RSTR;
-	volatile uint32_t RCC_APB2RSTR;
-	uint32_t RESERVED1[2];
-	volatile uint32_t RCC_AHB1ENR;
-	volatile uint32_t RCC_AHB2ENR;
-	uint32_t RESERVED2[2];
-	volatile uint32_t RCC_APB1ENR;
-	volatile uint32_t RCC_APB2ENR;
-	uint32_t RESERVED3[2];
-	volatile uint32_t RCC_AHB1LENR; 
-	volatile uint32_t RCC_AHB2LENR;
-	uint32_t RESERVED4[2];
-	volatile uint32_t RCC_APB1LENR;
-	volatile uint32_t RCC_APB2LENR;
-	uint32_t RESERVED5[2];
-	volatile uint32_t RCC_BDCR;
-	volatile uint32_t RCC_CSR;
-	uint32_t RESERVED6[2];
-	volatile uint32_t RCC_SSCGR;
-	volatile uint32_t RCC_PLLI2SCFGR;
-	uint32_t RESERVED7;
-	volatile uint32_t RCC_DCKCFGR;
-
-}RCC_Typedef;
-
-typedef struct 
-{
-	volatile uint32_t USART_SR;
-	volatile uint32_t USART_DR;
-	volatile uint32_t USART_BRR;
-	volatile uint32_t USART_CR1;
-	volatile uint32_t USART_CR2;
-	volatile uint32_t USART_CR3;
-	volatile uint32_t USART_GTPR;
-}USART_Typedef;
+#include <stdio.h>
+// hello my name is Phat ^^ to day I intoduce use printf for bare metal 
 
 #define RCC 		((RCC_Typedef*)RCC_BASE)
 #define GPIOA		((GPIO_Typedef*)(GPIOA_BASE))
@@ -75,6 +19,15 @@ typedef struct
 #define APB1_CLK			SYS_FREQ
 
 #define GPIOA_ENABLE			(1UL<<0) // 0b 0000 0000 0000 0000 0000 0000 0000 0001
+#define PIN5					(1U<<5)
+#define LED_PIN					PIN5
+
+int __io_putchar(int ch)
+{
+	while(!(USART1->USART_SR & (1U << 7)));
+	USART1->USART_DR = (ch & 0xFF);
+	return ch;
+}
 
 int main()
 {
@@ -91,10 +44,11 @@ int main()
 	// GPIOC->GPIO_PUPDR |= (1U << 26);
 	// GPIOC->GPIO_PUPDR &= ~(1U << 27);
 	/***************************************************************************** */
+	// PA9 TX 
 	// 1. enable clock gpioa
 	RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
 	//2 . set mode alternate 
-	GPIOA->GPIO_MODER &= ~(1U << 18);
+	GPIOA->GPIO_MODER &= ~(1U << 18); 
 	GPIOA->GPIO_MODER |= (1U << 19);
 	// 3.  SET ALTERNATE PIN FOR PA9
 	GPIOA->GPIO_AFR[1] &= ~ (0xF << 4);
@@ -103,12 +57,14 @@ int main()
 
 	// 1. enable clock usart 1
 	RCC->RCC_APB2ENR |= USART1_ENABLE;
+	// over8 = 0
+	USART1->USART_CR1 &= ~ (1U << 15); // OVER8 ==0 
 	// 2. set baudrate
 	USART1->USART_BRR |= (8U << 4) | (11U << 0);
 	// 3. SET MODE TE
 	USART1->USART_CR1 |= (1U << 3);
 	// 4. 1 bit start, 8 bit data, 1 stop bit
-	USART1->USART_CR1 |= (1U << 12);
+	USART1->USART_CR1 &= ~ (1U << 12);
 	USART1->USART_CR2 &= ~(3U << 12);
 	//  5. enable usart
 	USART1->USART_CR1 |= (1U<<13);//enable uart
@@ -116,8 +72,7 @@ int main()
 
 	while(1)
 	{
-		while (!(USART1->USART_SR & (1<<6)));
-		USART1->USART_DR = ('P' & 0xFF);
+		printf("hello world \n");
 
 		for(int i = 0; i < 1000000; i++);
 		// if((GPIOC->GPIO_IDR & BTN_PIN)==0)

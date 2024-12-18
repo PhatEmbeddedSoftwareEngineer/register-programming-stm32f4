@@ -1,3 +1,5 @@
+#pragma once
+#include <stdint.h>
 #define PERIPH_BASE 			(0x40000000UL)
 
 #define AHB1_BASE_OFFSET		(0x00020000UL)
@@ -81,6 +83,34 @@
 #define GPIO_ODR_OFFSET			(0x14UL)
 #define GPIOA_ODR				(*(volatile unsigned int*)(GPIO_ODR_OFFSET + GPIOA_BASE))
 
+// uart
+#define RCC 		((RCC_Typedef*)RCC_BASE)
+#define GPIOA		((GPIO_Typedef*)(GPIOA_BASE))
+#define GPIOC      	((GPIO_Typedef*)(GPIOC_BASE))
+#define GPIOA_ENABLE			(1UL<<0) // 0b 0000 0000 0000 0000 0000 0000 0000 0001
+#define GPIOC_ENABLE			(1U<<2)
+#define PIN13		(1U<<13)
+#define BTN_PIN		PIN13
+#define USART2 		((USART_Typedef*)USART2_BASE)
+#define USART1 		((USART_Typedef*)USART1_BASE)
+#define USART2_ENABLE		(1U << 17)
+#define USART1_ENABLE		(1U << 4)
+#define BAUDRATE			115200	
+
+#define SYS_FREQ			16000000
+#define APB1_CLK			SYS_FREQ
+
+typedef struct 
+{
+	volatile uint32_t USART_SR;
+	volatile uint32_t USART_DR;
+	volatile uint32_t USART_BRR;
+	volatile uint32_t USART_CR1;
+	volatile uint32_t USART_CR2;
+	volatile uint32_t USART_CR3;
+	volatile uint32_t USART_GTPR;
+}USART_Typedef;
+
 typedef struct 
 {
 	volatile uint32_t GPIO_MODER; // 0x00
@@ -127,15 +157,3 @@ typedef struct
 	volatile uint32_t RCC_DCKCFGR;
 
 }RCC_Typedef;
-
-typedef struct 
-{
-	volatile uint32_t USART_SR;
-	volatile uint32_t USART_DR;
-	volatile uint32_t USART_BRR;
-	volatile uint32_t USART_CR1;
-	volatile uint32_t USART_CR2;
-	volatile uint32_t USART_CR3;
-	volatile uint32_t USART_GTPR;
-}USART_Typedef;
-

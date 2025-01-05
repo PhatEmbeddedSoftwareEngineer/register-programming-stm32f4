@@ -34,3 +34,5 @@ typedef struct
 void init_pa5(void);
 void start_conversion_single_channel(void);
 uint16_t read_analog(void);
+void init_pa6(void);
+void start_conversion_continous_single_channel(void);

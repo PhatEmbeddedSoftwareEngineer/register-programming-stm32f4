@@ -4,11 +4,18 @@
 #include "uart.h"
 #include "adc.h"
 #include <stdbool.h>
+#include "systick.h"
+#include "timer.h"
+
+
 
 // hello my name is Phat ^^ to day I intoduce uart rx config 
 #define PIN5					(1U<<5)
 #define LED_PIN					PIN5
 
+// we are continue with read adc using continous mode 
+// in the previous video, i will read adc with single mode , today i config adc for read channel 5 in continous conversion mode
+// le do it
 
 int main()
 {
@@ -26,28 +33,32 @@ int main()
 	// GPIOC->GPIO_PUPDR &= ~(1U << 27);
 	/***************************************************************************** */
 	uart1_rxtx();
-	init_pa5();
-	// uint8_t data;
-	// bool readData;
+	// init_pa5();
+	// start_conversion_single_channel();
+	//init_pa6();
+	//start_conversion_continous_single_channel();
+	init_pa5_timer2_1hz();
+	init_pa6_input_capture();
+	//init_timer2_1hz();
+	
+	uint32_t timeStamp = 0;
+	/**
+	 * in the previous video i will code timer input capture mode for measure output compare in channel 5
+	 * 
+	 * i will connect wire jump in channel 6 connnect with channel 5 for measure signal 
+	 * PA6 -> PA5 for read value 
+	 * 
+	 */
 	while(1)
 	{
-		// printf("wait receive data\n");
-		// check_receive_uart_and_send(data,&readData);
-		// if(readData)
-		// {
-		// 	start_conversion_single_channel();
-		// 	printf("analog channel 5: %d\n",read_analog());
-		// 	for(int i = 0; i < 1000; i++);
-		// }
-		// else 
-		// {
-		// 	printf("stop convertsion single mode\n");
-		// }
-			start_conversion_single_channel();
-			printf("analog channel 5: %d\n",read_analog());
-			for(int i = 0; i < 100000; i++);
-
-
+		while(!(TIM3->TIMx_SR & (1U << 1)));
+		timeStamp = TIM3->TIMx_CCR1;
+		printf("timestamp:= %ld\n",timeStamp);
+//		 while(!(TIM2->TIMx_SR & TIM2_SR_UIF));
+//		 TIM2->TIMx_SR &= ~ (TIM2_SR_UIF);
+		//check_receive_uart_and_send();
+		//printf("hello world\n");
+//		delay_ms(1000);
 		// if((GPIOC->GPIO_IDR & BTN_PIN)==0)
 		// {
 		// 	GPIOA->GPIO_ODR ^= LED_PIN;

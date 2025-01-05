@@ -1,4 +1,4 @@
-../Src/uart.c:5:5:__io_putchar	16	static
-../Src/uart.c:11:9:readData	4	static
-../Src/uart.c:18:6:uart1_rxtx	4	static
-../Src/uart.c:56:6:check_receive_uart_and_send	16	static
+../Src/uart.c:7:5:__io_putchar	16	static
+../Src/uart.c:13:9:readData	4	static
+../Src/uart.c:20:6:uart1_rxtx	4	static
+../Src/uart.c:58:6:check_receive_uart_and_send	8	static

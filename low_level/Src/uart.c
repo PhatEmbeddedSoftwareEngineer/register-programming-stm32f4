@@ -2,16 +2,18 @@
 #include "define.h"
 #include <stdio.h>
 #include "adc.h"
+#include "systick.h"
+
 int __io_putchar(int ch)
-{
-	while(!(USART1->USART_SR & (1U << 7)));
+{	
 	USART1->USART_DR = (ch & 0xFF);
+	while(!(USART1->USART_SR & (1U << 7)));
 	return ch;
 }
 uint8_t readData()
 {
-	//while(!(USART1->USART_SR & (1U << 5)));
-	while(!(USART1->USART_SR & (1U << 5)));
+	while(!(USART1->USART_SR & (1U << 5))); // position 5 == 1
+	//if(!(USART1->USART_SR & (1U << 5)));
 	return USART1->USART_DR;
 }
 
@@ -53,34 +55,20 @@ void uart1_rxtx(void)
 	//  5. enable usart
 	USART1->USART_CR1 |= (1U<<13);//enable uart
 }
-void check_receive_uart_and_send(uint8_t data,bool *read)
+void check_receive_uart_and_send()
 {
-    data = readData();
-	switch(data)
+	switch(readData())
 	{
 		case 'R':
 		{
-			*read = true;
-			// for(int i=0;i<100;i++)
-			// {
-			// 	// read 100 signal adc 
-			// 	start_conversion_single_channel();
-			// 	printf("analog channel 1: %d\n",read_analog());
-			// 	for(int i = 0; i < 1000; i++);
-			// }
-			
-			break;
-		}
-		case 'E':
-		{
-			*read = false;
-			printf("STOP read ADC from REGISTER ADC DR\n");
+			printf("channel 6 adc: %d\n",read_analog());
+			delay_ms(1000);
+			//for(int i = 0; i < 100000; i++);
+			//printf("Hello world\n");
 			break;
 		}
 		default:
 		{
-			printf("character you press is [%c]\n",data);
-			printf("dont't same character P and E ^^\n");
 			break;
 		}
 	}

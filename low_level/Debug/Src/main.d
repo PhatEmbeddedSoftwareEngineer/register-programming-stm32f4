@@ -1,4 +1,7 @@
-Src/main.o: ../Src/main.c ../Inc/define.h ../Inc/uart.h ../Inc/adc.h
+Src/main.o: ../Src/main.c ../Inc/define.h ../Inc/uart.h ../Inc/adc.h \
+ ../Inc/systick.h ../Inc/timer.h
 ../Inc/define.h:
 ../Inc/uart.h:
 ../Inc/adc.h:
+../Inc/systick.h:
+../Inc/timer.h:

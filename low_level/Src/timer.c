@@ -10,11 +10,15 @@ void init_timer2_1hz()
      * hz = 16 000 000 / ((1600-1)*(10000-1)) = 1
      * i will get 1s 
      */
-    TIM2->TIMx_PSC = 1600-1;
+    TIM2->TIMx_PSC = 1600-1; // 16 000 000 / 1600 = 10000 
     TIM2->TIMx_ARR = 10000-1; // max = 65535
     TIM2->TIMx_CNT = 0;
     TIM2->TIMx_CR1 |= TIM2_CEN;
-
+    /**
+     * kết hợp hàm ở dưới để tạo delay 
+     */
+//		 while(!(TIM2->TIMx_SR & TIM2_SR_UIF));
+//		 TIM2->TIMx_SR &= ~ (TIM2_SR_UIF);
 }
 
 void init_pa5_timer2_1hz()
@@ -39,8 +43,8 @@ void init_pa5_timer2_1hz()
     TIM2->TIMx_ARR = 10000-1; // max = 65535
     TIM2->TIMx_CNT = 0;
 
-    TIM2->TIMx_CCMR1 |= (1U << 4) | (1U << 5);
-    TIM2->TIMx_CCER |= (1U <<0);
+    TIM2->TIMx_CCMR1 |= (1U << 4) | (1U << 5); // toggle 
+    TIM2->TIMx_CCER |= (1U <<0); // 
 
 
     TIM2->TIMx_CR1 |= TIM2_CEN;

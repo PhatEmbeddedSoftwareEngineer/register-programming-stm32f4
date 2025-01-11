@@ -42,6 +42,9 @@ void uart1_rxtx(void)
 	// over8 = 0
 	USART1->USART_CR1 &= ~ (1U << 15); // OVER8 ==0 
 	// 2. set baudrate
+	/**
+	 * baudrate = flck/(8*(2-OVER8)*USARTDIV)
+	 */
 	USART1->USART_BRR |= (8U << 4) | (11U << 0);
 	// 3. SET MODE TE
 	USART1->USART_CR1 |= (1U << 3);

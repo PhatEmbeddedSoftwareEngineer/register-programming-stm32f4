@@ -1,0 +1,4 @@
+../Src/exti.c:8:6:pc13_init_exti	1
+../Src/exti.c:40:6:initVariable	1
+../Src/exti.c:47:13:callBack	1
+../Src/exti.c:52:6:EXTI15_10_IRQHandler	2

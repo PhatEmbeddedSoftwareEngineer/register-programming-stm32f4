@@ -6,8 +6,8 @@
 #include <stdbool.h>
 #include "systick.h"
 #include "timer.h"
-
-
+#include "exti.h"
+event_t _even;
 
 // hello my name is Phat ^^ to day I intoduce uart rx config 
 #define PIN5					(1U<<5)
@@ -37,23 +37,26 @@ int main()
 	// start_conversion_single_channel();
 	//init_pa6();
 	//start_conversion_continous_single_channel();
-	init_pa5_timer2_1hz();
-	init_pa6_input_capture();
+	// init_pa5_timer2_1hz();
+	// init_pa6_input_capture();
 	//init_timer2_1hz();
 	
-	uint32_t timeStamp = 0;
-	/**
-	 * in the previous video i will code timer input capture mode for measure output compare in channel 5
-	 * 
-	 * i will connect wire jump in channel 6 connnect with channel 5 for measure signal 
-	 * PA6 -> PA5 for read value 
-	 * 
+	//uint32_t timeStamp = 0;
+	/********************************************************************* */
+	pc13_init_exti();
+	/*
+		today i code interrupt , let's do it
 	 */
 	while(1)
 	{
-		while(!(TIM3->TIMx_SR & (1U << 1)));
-		timeStamp = TIM3->TIMx_CCR1;
-		printf("timestamp:= %ld\n",timeStamp);
+		
+		if(_even.cnt ==10)
+		{
+			printf("hello world ^^\n");
+		}
+		// while(!(TIM3->TIMx_SR & (1U << 1)));
+		// timeStamp = TIM3->TIMx_CCR1;
+		// printf("timestamp:= %ld\n",timeStamp);
 //		 while(!(TIM2->TIMx_SR & TIM2_SR_UIF));
 //		 TIM2->TIMx_SR &= ~ (TIM2_SR_UIF);
 		//check_receive_uart_and_send();

@@ -1,4 +1,5 @@
-../Src/uart.c:7:5:__io_putchar	2
-../Src/uart.c:13:9:readData	2
-../Src/uart.c:20:6:uart1_rxtx	1
-../Src/uart.c:61:6:check_receive_uart_and_send	2
+../Src/uart.c:10:5:__io_putchar	2
+../Src/uart.c:16:9:readData	2
+../Src/uart.c:23:6:uart1_rxtx	1
+../Src/uart.c:67:6:check_receive_uart_and_send	2
+../Src/uart.c:86:6:USART1_IRQHandler	2

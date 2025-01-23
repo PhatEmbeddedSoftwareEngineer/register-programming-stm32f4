@@ -45,7 +45,6 @@ void init_pa6(void)
 }
 
 
-
 void start_conversion_single_channel(void)
 {
     ADC1->ADC_CR2 |= (1U << 30);

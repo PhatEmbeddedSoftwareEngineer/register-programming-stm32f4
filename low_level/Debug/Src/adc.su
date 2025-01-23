@@ -1,5 +1,5 @@
 ../Src/adc.c:9:6:init_pa5	4	static
 ../Src/adc.c:28:6:init_pa6	4	static
-../Src/adc.c:49:6:start_conversion_single_channel	4	static
-../Src/adc.c:53:6:start_conversion_continous_single_channel	4	static
-../Src/adc.c:60:10:read_analog	4	static
+../Src/adc.c:48:6:start_conversion_single_channel	4	static
+../Src/adc.c:52:6:start_conversion_continous_single_channel	4	static
+../Src/adc.c:59:10:read_analog	4	static

@@ -4,6 +4,9 @@
 #include "adc.h"
 #include "systick.h"
 
+
+
+
 int __io_putchar(int ch)
 {	
 	USART1->USART_DR = (ch & 0xFF);
@@ -55,6 +58,9 @@ void uart1_rxtx(void)
 	// 4. 1 bit start, 8 bit data, 1 stop bit
 	USART1->USART_CR1 &= ~ (1U << 12);
 	USART1->USART_CR2 &= ~(3U << 12);
+	// 6 enable interrupt rx
+	USART1->USART_CR1 |= (1U << 5);
+	__NVIC_EnableIRQ(USART1_position);
 	//  5. enable usart
 	USART1->USART_CR1 |= (1U<<13);//enable uart
 }
@@ -75,4 +81,16 @@ void check_receive_uart_and_send()
 			break;
 		}
 	}
+}
+
+void USART1_IRQHandler()
+{
+	
+	if(USART1->USART_SR & (1U <<5))
+	{
+		myData.haveISR=true;
+		myData.data = USART1->USART_DR;
+		//printf("%c\n",_var.data);
+	}
+
 }

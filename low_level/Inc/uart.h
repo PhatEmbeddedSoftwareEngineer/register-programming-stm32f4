@@ -1,6 +1,15 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
+#include "exti.h"
+
+typedef struct 
+{
+	volatile uint8_t data;
+    volatile bool haveISR;
+}Handle_variable_t;
+
+extern Handle_variable_t myData;
 
 int __io_putchar(int ch);
 uint8_t readData();

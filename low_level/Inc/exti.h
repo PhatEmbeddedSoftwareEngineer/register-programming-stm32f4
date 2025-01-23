@@ -134,7 +134,7 @@ typedef struct
     volatile uint32_t NVIC_ISPR[8];
     uint32_t RESERVED2[25];
     volatile uint32_t NVIC_ICPR[8];
-        uint32_t RESERVED3[25];
+    uint32_t RESERVED3[25];
     volatile uint32_t NVIC_IABR[8];
     uint32_t RESERVED4[57];
     volatile uint32_t NVIC_IPR[60];

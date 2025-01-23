@@ -8,17 +8,16 @@
 #include "timer.h"
 #include "exti.h"
 event_t _even;
+Handle_variable_t myData;
 
 // hello my name is Phat ^^ to day I intoduce uart rx config 
 #define PIN5					(1U<<5)
 #define LED_PIN					PIN5
-
-// we are continue with read adc using continous mode 
-// in the previous video, i will read adc with single mode , today i config adc for read channel 5 in continous conversion mode
-// le do it
-
+void processDataFromISRUsart(Handle_variable_t *_data);
 int main()
 {
+	myData.data=0;
+	myData.haveISR=false;
 	// 1. enable clock gpioa
 	// RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
 	// RCC->RCC_AHB1ENR |= GPIOC_ENABLE;
@@ -43,17 +42,15 @@ int main()
 	
 	//uint32_t timeStamp = 0;
 	/********************************************************************* */
-	pc13_init_exti();
-	/*
-		today i code interrupt , let's do it
-	 */
+	//pc13_init_exti();
+
 	while(1)
 	{
-		
-		if(_even.cnt ==10)
-		{
-			printf("hello world ^^\n");
-		}
+		processDataFromISRUsart(&myData);
+		// if(_even.cnt ==10)
+		// {
+		 	//printf("hello world ^^\n");
+		// }
 		// while(!(TIM3->TIMx_SR & (1U << 1)));
 		// timeStamp = TIM3->TIMx_CCR1;
 		// printf("timestamp:= %ld\n",timeStamp);
@@ -61,7 +58,7 @@ int main()
 //		 TIM2->TIMx_SR &= ~ (TIM2_SR_UIF);
 		//check_receive_uart_and_send();
 		//printf("hello world\n");
-//		delay_ms(1000);
+		//delay_ms(1000);
 		// if((GPIOC->GPIO_IDR & BTN_PIN)==0)
 		// {
 		// 	GPIOA->GPIO_ODR ^= LED_PIN;
@@ -69,5 +66,25 @@ int main()
 		// }
 		
 	}
+}
+
+void processDataFromISRUsart(Handle_variable_t *_data)
+{
+
+	if(_data->haveISR)
+	{
+		if(_data->data != 0)
+		{
+			printf("%c\n",_data->data);
+
+		}
+		_data->haveISR=false;
+	}
+	if(!_data->haveISR && _data->data != 0)
+	{
+		_data->data =0;
+	}
+	
+
 }
 

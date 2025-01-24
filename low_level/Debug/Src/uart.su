@@ -1,5 +1,7 @@
-../Src/uart.c:10:5:__io_putchar	16	static
-../Src/uart.c:16:9:readData	4	static
-../Src/uart.c:23:6:uart1_rxtx	16	static,ignoring_inline_asm
-../Src/uart.c:67:6:check_receive_uart_and_send	8	static
-../Src/uart.c:86:6:USART1_IRQHandler	4	static
+../Src/uart.c:8:5:__io_putchar	16	static
+../Src/uart.c:14:6:debug	24	static
+../Src/uart.c:26:6:print	16	static
+../Src/uart.c:31:9:readData	4	static
+../Src/uart.c:38:6:uart1_rxtx	16	static,ignoring_inline_asm
+../Src/uart.c:82:6:check_receive_uart_and_send	8	static
+../Src/uart.c:101:6:USART1_IRQHandler	4	static

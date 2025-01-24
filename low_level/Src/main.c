@@ -18,6 +18,7 @@ int main()
 {
 	myData.data=0;
 	myData.haveISR=false;
+	myData.size=0;
 	// 1. enable clock gpioa
 	// RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
 	// RCC->RCC_AHB1ENR |= GPIOC_ENABLE;
@@ -43,7 +44,7 @@ int main()
 	//uint32_t timeStamp = 0;
 	/********************************************************************* */
 	//pc13_init_exti();
-
+	debug("test\n");
 	while(1)
 	{
 		processDataFromISRUsart(&myData);
@@ -67,23 +68,40 @@ int main()
 		
 	}
 }
-
+void display(volatile uint8_t *data, uint16_t leng)
+{
+	for(int i=0;i<leng;i++)
+	{
+		printf("%c",data[i]);
+	}
+	printf("\n");
+}
 void processDataFromISRUsart(Handle_variable_t *_data)
 {
-
-	if(_data->haveISR)
+	if(_data->haveISR )
 	{
-		if(_data->data != 0)
-		{
-			printf("%c\n",_data->data);
-
-		}
+		//debug((char*)&myData.data);
+		print(_data->data);
 		_data->haveISR=false;
 	}
-	if(!_data->haveISR && _data->data != 0)
-	{
-		_data->data =0;
-	}
+	// if(_data->size >=1)
+	// {
+	// 	display(_data->array,_data->size);
+	// 	_data->size=0;
+	// }
+	// if(_data->haveISR)
+	// {
+	// 	if(_data->data != 0)
+	// 	{
+	// 		printf("%c\n",_data->data);
+
+	// 	}
+	// 	_data->haveISR=false;
+	// }
+	// if(!_data->haveISR && _data->data != 0)
+	// {
+	// 	_data->data =0;
+	// }
 	
 
 }

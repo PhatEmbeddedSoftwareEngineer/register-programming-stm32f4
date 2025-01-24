@@ -5,13 +5,28 @@
 #include "systick.h"
 
 
-
-
 int __io_putchar(int ch)
 {	
 	USART1->USART_DR = (ch & 0xFF);
 	while(!(USART1->USART_SR & (1U << 7)));
 	return ch;
+}
+void debug(char *str)
+{
+	int ch;
+	while(*str != '\0')
+	{
+		ch = *str;
+		USART1->USART_DR = (ch & 0xFF);
+		while(!(USART1->USART_SR & (1U << 7)));
+		str++;
+	}
+	
+}
+void print(uint8_t data)
+{
+	USART1->USART_DR = (data & 0xFF);
+	while(!(USART1->USART_SR & (1U << 7)));
 }
 uint8_t readData()
 {
@@ -90,6 +105,14 @@ void USART1_IRQHandler()
 	{
 		myData.haveISR=true;
 		myData.data = USART1->USART_DR;
+		
+		//printf("%c",myData.data);
+		// if(myData.size < 5)
+		// {
+		// 	myData.array[myData.size++] = myData.data;
+		// }
+		// else 
+		// 	myData.size=0;
 		//printf("%c\n",_var.data);
 	}
 

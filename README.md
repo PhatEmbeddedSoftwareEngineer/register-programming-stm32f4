@@ -1,1 +1,1 @@
-# register-programming-stm32f4
+# đây là những chương trình code stm32 từ bare metal , một đẳng cấp cao hơn, một giấc mơ vĩ đại hơn.

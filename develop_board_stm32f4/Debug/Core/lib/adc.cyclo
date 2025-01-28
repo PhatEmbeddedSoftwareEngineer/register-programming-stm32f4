@@ -1,0 +1,7 @@
+../Core/lib/adc.c:11:6:init_channel5	1
+../Core/lib/adc.c:37:6:init_channel6	1
+../Core/lib/adc.c:57:6:start_conversion_single_channel	1
+../Core/lib/adc.c:63:6:start_conversion_continous_single_channel	1
+../Core/lib/adc.c:69:10:read_analog	2
+../Core/lib/adc.c:75:13:callBack	1
+../Core/lib/adc.c:81:6:ADC_IRQHandler	2

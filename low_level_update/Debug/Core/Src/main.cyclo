@@ -1,0 +1,5 @@
+../Core/Src/main.cpp:9:6:void uart1_rxtx()	1
+../Core/Src/main.cpp:56:6:void USART1_IRQHandler()	2
+../Core/Src/main.cpp:66:5:int main()	2
+../Core/Src/main.cpp:79:1:void __static_initialization_and_destruction_0(int, int)	3
+../Core/Src/main.cpp:79:1:cpp)	1

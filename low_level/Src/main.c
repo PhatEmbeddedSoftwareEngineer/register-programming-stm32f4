@@ -9,16 +9,17 @@
 #include "exti.h"
 event_t _even;
 Handle_variable_t myData;
-
+void printNumberFloat(float *num);
 // hello my name is Phat ^^ to day I intoduce uart rx config 
 #define PIN5					(1U<<5)
 #define LED_PIN					PIN5
 void processDataFromISRUsart(Handle_variable_t *_data);
+
 int main()
 {
-	myData.data=0;
-	myData.haveISR=false;
-	myData.size=0;
+//	myData.data=0;
+//	myData.haveISR=false;
+//	myData.size=0;
 	// 1. enable clock gpioa
 	// RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
 	// RCC->RCC_AHB1ENR |= GPIOC_ENABLE;
@@ -44,10 +45,15 @@ int main()
 	//uint32_t timeStamp = 0;
 	/********************************************************************* */
 	//pc13_init_exti();
-	debug("test\n");
+	//debug("test\n");
+	//int num = 1234;
+//	printNumberFloat(&a);
+//	printf("\n");
+	//printf("hello world %d %.2f\n",10,3.14);
 	while(1)
 	{
-		processDataFromISRUsart(&myData);
+		myPrintf("%c\n",myData.data);
+		//processDataFromISRUsart(&myData);
 		// if(_even.cnt ==10)
 		// {
 		 	//printf("hello world ^^\n");
@@ -68,6 +74,14 @@ int main()
 		
 	}
 }
+void printNumberFloat(float *num)
+{
+	int int_part = (int)(*num);
+	printInt(int_part);
+	print('.');
+	int decimal_part = (*num-int_part)*100;
+	printInt(decimal_part);
+}
 void display(volatile uint8_t *data, uint16_t leng)
 {
 	for(int i=0;i<leng;i++)
@@ -84,25 +98,5 @@ void processDataFromISRUsart(Handle_variable_t *_data)
 		print(_data->data);
 		_data->haveISR=false;
 	}
-	// if(_data->size >=1)
-	// {
-	// 	display(_data->array,_data->size);
-	// 	_data->size=0;
-	// }
-	// if(_data->haveISR)
-	// {
-	// 	if(_data->data != 0)
-	// 	{
-	// 		printf("%c\n",_data->data);
-
-	// 	}
-	// 	_data->haveISR=false;
-	// }
-	// if(!_data->haveISR && _data->data != 0)
-	// {
-	// 	_data->data =0;
-	// }
-	
-
 }
 

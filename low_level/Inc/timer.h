@@ -10,12 +10,6 @@ typedef struct
     volatile uint32_t TIMx_DIER;
     volatile uint32_t TIMx_SR;
     volatile uint32_t TIMx_EGR;
-    // in the video previous i code 
-    /**
-     * volatile uint32_t TIMx_CCMR1[2];
-     * volatile uint32_t TIMx_CCMR2[2]; 
-     * in fact, i make mistake , i change to below is correct
-     */
     volatile uint32_t TIMx_CCMR1;
     volatile uint32_t TIMx_CCMR2;
     volatile uint32_t TIMx_CCER;

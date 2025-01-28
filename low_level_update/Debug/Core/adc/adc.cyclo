@@ -1,0 +1,6 @@
+../Core/adc/adc.cpp:3:1:ADC::ADC()	1
+../Core/adc/adc.cpp:8:6:void ADC::init_channel5()	1
+../Core/adc/adc.cpp:27:6:void ADC::init_channel6()	1
+../Core/adc/adc.cpp:46:6:void ADC::start_conversion_single_channel()	1
+../Core/adc/adc.cpp:52:6:void ADC::start_conversion_continous_single_channel()	1
+../Core/adc/adc.cpp:58:10:uint16_t ADC::read_analog()	2

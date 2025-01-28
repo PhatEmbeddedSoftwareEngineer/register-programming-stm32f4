@@ -60,7 +60,7 @@ main-build: low_level.elf secondary-outputs
 
 # Tool invocations
 low_level.elf low_level.map: $(OBJS) $(USER_OBJS) D:\register-programming-stm32f4\low_level\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "low_level.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\register-programming-stm32f4\low_level\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="low_level.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "low_level.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"D:\register-programming-stm32f4\low_level\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="low_level.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

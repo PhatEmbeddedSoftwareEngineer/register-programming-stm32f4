@@ -43,7 +43,19 @@ void init_pa6(void)
     // enable conversion 
     ADC1->ADC_CR2 |= (1U << 0); // adont 
 }
-
+/**
+ * nếu không dùng chế độ chuyển đổi liên tục thì bạn có thể dùng chuyển đổi đơn như sau:
+ * 1. init channel
+ * 2. gọi hàm start_conversion_single_channel();
+ * 3. myPrintf("analog : %d\n",read_analog());
+ *  sau đó trong vòng lặp bạn mỗi lần bạn muốn đọc dữ liệu adc bạn đều sẽ phải gọi hàm start+conversion_single_channel()
+ * thực hiện như sau:
+ * while(1)
+ * {
+ *      start_conversion_single_channel();
+ *      myPrintf("analog : %d\n",read_analog());
+ * }
+ */
 
 void start_conversion_single_channel(void)
 {

@@ -2,7 +2,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "exti.h"
-
+#include "stdarg.h"
+#include <stdio.h>
+#include <string.h>
 typedef struct 
 {
     volatile uint8_t size;
@@ -19,3 +21,6 @@ void uart1_rxtx(void);
 void debug(char *str);
 void print(uint8_t data);
 void check_receive_uart_and_send();
+void myPrintf(const char *fmt,...);
+void printInt(int num);
+

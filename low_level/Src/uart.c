@@ -37,6 +37,7 @@ uint8_t readData()
 
 void uart1_rxtx(void)
 {
+#if 1
 	// PA9 TX 
 	// 1. enable clock gpioa
 	RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
@@ -78,6 +79,8 @@ void uart1_rxtx(void)
 	__NVIC_EnableIRQ(USART1_position);
 	//  5. enable usart
 	USART1->USART_CR1 |= (1U<<13);//enable uart
+#endif
+	
 }
 void check_receive_uart_and_send()
 {
@@ -117,3 +120,68 @@ void USART1_IRQHandler()
 	}
 
 }
+void tranmissionEachByte(char *str)
+{
+  int ch;
+  while(*str != '\0')
+  {
+    ch = *str;
+    //HAL_UART_Transmit(&huart1,(uint8_t *)&ch,1,HAL_MAX_DELAY);
+    USART1->USART_DR = (ch & 0xFF);
+	while(!(USART1->USART_SR & (1U << 7)));
+    str++;
+  }
+}
+
+void myPrintf(const char *fmt, ...)
+{
+  va_list args;
+  va_start(args,fmt);
+  char buffer[512];
+  vsnprintf(buffer,sizeof(buffer),fmt,args);
+  tranmissionEachByte(buffer);
+  va_end(args);
+}
+
+int convertNumberToString(int num, char *str)
+{
+	int i=0;
+	int isNegative = 0;
+	if(num < 0)
+	{
+		num = -num;
+		isNegative = 1;
+	}
+	char c;
+	do 
+	{
+		c = (num % 10) + '0';
+		str[i++] = c;
+		num = num / 10; 
+	}while(num > 0);
+	if(isNegative)
+	{
+		str[i++] = '-';
+	}
+	str[i] = '\0';
+	return i;
+}
+void reverseString(char *str, int leng)
+{
+	char temp[leng];
+	for(int i=0;i < leng;i++)
+	{
+		temp[i] = str[leng-i-1];
+	}
+	strncpy(str,temp,leng);
+	//int len = strlen(str);
+	// myPrintf("leng after process:= %d\n",len);
+}
+void printInt(int num)
+{
+	char str[100];
+	int leng = convertNumberToString(num,str);
+	reverseString(str,leng);
+	tranmissionEachByte(str);
+}
+

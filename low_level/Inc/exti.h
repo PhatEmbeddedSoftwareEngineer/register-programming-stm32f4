@@ -7,7 +7,7 @@
  */
 
 /**
- *  1 . disable global interrupt 
+ *  1. disable global interrupt 
  *  2. enable clock asscess for GPIO
  *  3. set mode input
  *  4. enable clock access to SYSCFG (important)

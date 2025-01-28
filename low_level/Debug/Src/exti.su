@@ -1,4 +1,4 @@
-../Src/exti.c:8:6:pc13_init_exti	16	static,ignoring_inline_asm
-../Src/exti.c:40:6:initVariable	16	static
-../Src/exti.c:47:13:callBack	16	static
+../Src/exti.c:47:13:callBack	8	static
+../Src/exti.c:40:6:initVariable	0	static
+../Src/exti.c:8:6:pc13_init_exti	8	static,ignoring_inline_asm
 ../Src/exti.c:52:6:EXTI15_10_IRQHandler	8	static

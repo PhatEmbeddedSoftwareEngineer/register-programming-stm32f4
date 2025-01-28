@@ -1,0 +1,4 @@
+../Core/lib/exti.c:11:6:initVariable	16	static
+../Core/lib/exti.c:17:6:pc13_init_exti	16	static,ignoring_inline_asm
+../Core/lib/exti.c:43:13:callBack	16	static
+../Core/lib/exti.c:47:6:EXTI15_10_IRQHandler	8	static

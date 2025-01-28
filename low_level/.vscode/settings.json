@@ -1,6 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "uart.h": "c"
+        "uart.h": "c",
+        "define.h": "c"
     }
 }

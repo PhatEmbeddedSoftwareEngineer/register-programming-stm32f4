@@ -1,0 +1,4 @@
+../Core/lib/systick.c:10:6:delay_ms	24	static
+../Core/lib/systick.c:32:6:create_1hz_interrupt_systick	4	static
+../Core/lib/systick.c:42:13:callBackSystick	8	static
+../Core/lib/systick.c:48:6:SysTick_Handler	8	static

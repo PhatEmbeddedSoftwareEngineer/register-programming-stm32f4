@@ -3,5 +3,10 @@
 ../Src/uart.c:26:6:print	2
 ../Src/uart.c:31:9:readData	2
 ../Src/uart.c:38:6:uart1_rxtx	1
-../Src/uart.c:82:6:check_receive_uart_and_send	2
-../Src/uart.c:101:6:USART1_IRQHandler	2
+../Src/uart.c:85:6:check_receive_uart_and_send	2
+../Src/uart.c:104:6:USART1_IRQHandler	2
+../Src/uart.c:123:6:tranmissionEachByte	3
+../Src/uart.c:136:6:myPrintf	1
+../Src/uart.c:146:5:convertNumberToString	4
+../Src/uart.c:169:6:reverseString	2
+../Src/uart.c:180:6:printInt	1

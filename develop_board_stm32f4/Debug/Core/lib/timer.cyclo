@@ -1,0 +1,3 @@
+../Core/lib/timer.c:10:6:init_timer2_1hz	1
+../Core/lib/timer.c:30:6:init_pa5_timer2_1hz	1
+../Core/lib/timer.c:60:6:init_pa6_input_capture	1

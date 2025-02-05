@@ -80,4 +80,35 @@ void init_pa6_input_capture()
 
 }
 
+void init_interrupt_timer_1hz()
+{
+    // enable clock timer2 in RCC 
+    RCC->RCC_APB1ENR |= TIM2_EN;
+    // caculate prescaler
+    TIM2->TIMx_PSC = 1600-1; // 16 000 000 / 1600 = 10000
+    // calculate arr
+    TIM2->TIMx_ARR = 10000-1; // max = 65535
+    // set value counter = zero
+    TIM2->TIMx_CNT = 0;
+    // enable update interrupt in TIMx_DIER register
+    TIM2->TIMx_DIER |= UPDATE_INTERRUPT_EN;
+    // enable timer interrupt in NVIC
+    __NVIC_EnableIRQ(TIM2_position);
+    // enable counter timer 2 
+    TIM2->TIMx_CR1 |= TIM2_CEN;
 
+}
+
+static void callBackTimer(void)
+{
+    static int cnt=0;
+    myPrintf("hello world:= %d\n",cnt++);
+}
+
+void TIM2_IRQHandler()
+{
+    // clear UIF bit when counter overflow 
+    TIM2->TIMx_SR &= ~ TIM2_SR_UIF;
+    // do function 
+    callBackTimer();
+}

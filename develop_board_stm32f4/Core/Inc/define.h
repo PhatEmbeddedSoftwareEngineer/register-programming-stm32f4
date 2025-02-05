@@ -87,6 +87,7 @@
 #define RCC 		((RCC_Typedef*)RCC_BASE)
 #define GPIOA		((GPIO_Typedef*)(GPIOA_BASE))
 #define GPIOC      	((GPIO_Typedef*)(GPIOC_BASE))
+#define GPIOB		((GPIO_Typedef*)GPIOB_BASE)
 #define GPIOA_ENABLE			(1UL<<0) // 0b 0000 0000 0000 0000 0000 0000 0000 0001
 #define GPIOC_ENABLE			(1U<<2)
 #define PIN13		(1U<<13)
@@ -101,7 +102,7 @@
 #define APB1_CLK			SYS_FREQ
 #define EN_CLOCK_GPIOC      (1U << 2)
 #define EN_CLOCK_SYSCFG		(1U << 14)
-
+#define PERIPHERAL_EN		(1U << 0)
 
 
 

@@ -6,6 +6,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/lib/adc.c \
+../Core/lib/dma.c \
 ../Core/lib/exti.c \
 ../Core/lib/systick.c \
 ../Core/lib/timer.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 
 OBJS += \
 ./Core/lib/adc.o \
+./Core/lib/dma.o \
 ./Core/lib/exti.o \
 ./Core/lib/systick.o \
 ./Core/lib/timer.o \
@@ -20,6 +22,7 @@ OBJS += \
 
 C_DEPS += \
 ./Core/lib/adc.d \
+./Core/lib/dma.d \
 ./Core/lib/exti.d \
 ./Core/lib/systick.d \
 ./Core/lib/timer.d \
@@ -33,7 +36,7 @@ Core/lib/%.o Core/lib/%.su Core/lib/%.cyclo: ../Core/lib/%.c Core/lib/subdir.mk
 clean: clean-Core-2f-lib
 
 clean-Core-2f-lib:
-	-$(RM) ./Core/lib/adc.cyclo ./Core/lib/adc.d ./Core/lib/adc.o ./Core/lib/adc.su ./Core/lib/exti.cyclo ./Core/lib/exti.d ./Core/lib/exti.o ./Core/lib/exti.su ./Core/lib/systick.cyclo ./Core/lib/systick.d ./Core/lib/systick.o ./Core/lib/systick.su ./Core/lib/timer.cyclo ./Core/lib/timer.d ./Core/lib/timer.o ./Core/lib/timer.su ./Core/lib/uart.cyclo ./Core/lib/uart.d ./Core/lib/uart.o ./Core/lib/uart.su
+	-$(RM) ./Core/lib/adc.cyclo ./Core/lib/adc.d ./Core/lib/adc.o ./Core/lib/adc.su ./Core/lib/dma.cyclo ./Core/lib/dma.d ./Core/lib/dma.o ./Core/lib/dma.su ./Core/lib/exti.cyclo ./Core/lib/exti.d ./Core/lib/exti.o ./Core/lib/exti.su ./Core/lib/systick.cyclo ./Core/lib/systick.d ./Core/lib/systick.o ./Core/lib/systick.su ./Core/lib/timer.cyclo ./Core/lib/timer.d ./Core/lib/timer.o ./Core/lib/timer.su ./Core/lib/uart.cyclo ./Core/lib/uart.d ./Core/lib/uart.o ./Core/lib/uart.su
 
 .PHONY: clean-Core-2f-lib
 

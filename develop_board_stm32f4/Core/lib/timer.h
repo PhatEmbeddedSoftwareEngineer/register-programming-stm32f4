@@ -11,6 +11,8 @@
 #define LIB_TIMER_H_
 
 #include "define.h"
+#include "uart.h"
+#include "exti.h"
 
 typedef struct
 {
@@ -45,9 +47,11 @@ typedef struct
 #define TIM2_CEN        (1U << 0)
 #define TIM2_SR_UIF     (1U << 0)
 #define CLOCK_GPIOA_EN  (1U << 0)
+#define UPDATE_INTERRUPT_EN     (1U << 0)
 
 
 void init_timer2_1hz();
+void init_interrupt_timer_1hz();
 void init_pa5_timer2_1hz();
 void init_pa6_input_capture();
 

@@ -1,0 +1,3 @@
+../Core/lib/dma.c:3:6:init_dma2_usart1_tx	32	static,ignoring_inline_asm
+../Core/lib/dma.c:42:13:dma_callBack	8	static
+../Core/lib/dma.c:48:6:DMA2_Stream7_IRQHandler	8	static

@@ -8,6 +8,7 @@
 "./Core/lib/adc.o"
 "./Core/lib/dma.o"
 "./Core/lib/exti.o"
+"./Core/lib/i2c.o"
 "./Core/lib/systick.o"
 "./Core/lib/timer.o"
 "./Core/lib/uart.o"

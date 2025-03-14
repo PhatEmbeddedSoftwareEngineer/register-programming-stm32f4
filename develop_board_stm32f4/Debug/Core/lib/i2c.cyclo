@@ -1,0 +1,4 @@
+../Core/lib/i2c.c:3:6:init_i2c1	1
+../Core/lib/i2c.c:58:6:I2C1_byteRead	8
+../Core/lib/i2c.c:127:6:I2C_burstRead	12
+../Core/lib/i2c.c:204:6:I2C1_burstWrite	8

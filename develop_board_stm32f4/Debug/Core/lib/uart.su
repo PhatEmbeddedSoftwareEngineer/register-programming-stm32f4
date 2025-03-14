@@ -1,9 +1,9 @@
 ../Core/lib/uart.c:13:6:initStructData	16	static
 ../Core/lib/uart.c:19:6:uart1_rxtx	16	static,ignoring_inline_asm
-../Core/lib/uart.c:59:6:USART1_IRQHandler	8	static
-../Core/lib/uart.c:70:13:printCharacter	16	static
-../Core/lib/uart.c:75:9:readData	4	static
-../Core/lib/uart.c:81:13:tranmissionEachByte	24	static
-../Core/lib/uart.c:93:6:myPrintf	272	static
-../Core/lib/uart.c:102:6:check_receive_uart_and_send	8	static
-../Core/lib/uart.c:120:6:processDataOfInterruptRx	16	static
+../Core/lib/uart.c:60:6:USART1_IRQHandler	8	static
+../Core/lib/uart.c:71:13:printCharacter	16	static
+../Core/lib/uart.c:76:9:readData	4	static
+../Core/lib/uart.c:82:13:tranmissionEachByte	24	static
+../Core/lib/uart.c:94:6:myPrintf	272	static
+../Core/lib/uart.c:103:6:check_receive_uart_and_send	8	static
+../Core/lib/uart.c:121:6:processDataOfInterruptRx	16	static

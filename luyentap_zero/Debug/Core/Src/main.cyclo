@@ -1,0 +1,12 @@
+../Core/Src/main.c:18:6:initUsart1	1
+../Core/Src/main.c:52:6:transmissionEachByte	4
+../Core/Src/main.c:64:6:my_printf	1
+../Core/Src/main.c:74:6:initLed	1
+../Core/Src/main.c:88:6:readStatePA0	1
+../Core/Src/main.c:93:6:gpioPD15SetHigh	1
+../Core/Src/main.c:98:6:gpioPD15SetLow	1
+../Core/Src/main.c:103:6:my_handler	2
+../Core/Src/main.c:119:6:button_interrupt_init	2
+../Core/Src/main.c:162:6:initButton	1
+../Core/Src/main.c:170:6:initGpioPD15_output	1
+../Core/Src/main.c:178:5:main	1

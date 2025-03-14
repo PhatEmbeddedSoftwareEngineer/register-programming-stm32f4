@@ -21,6 +21,7 @@ void uart1_rxtx(void)
 	// 1. enable clock gpioa
 	RCC->RCC_AHB1ENR |= GPIOA_ENABLE;
 	// 2. set mode alternate for PA9 TX
+	GPIOA->GPIO_MODER &= ~(3U << 18);
 	GPIOA->GPIO_MODER |= (2U << 18);
 	GPIOA->GPIO_AFR[1] |= (7U << 4);
 
@@ -48,11 +49,11 @@ void uart1_rxtx(void)
 	#ifdef USE_INTERRUPT_RECEIVER
 	USART1->USART_CR1 |= (1U << 5);
 	__NVIC_EnableIRQ(USART1_position);
+	initStructData(&_data);
 	#endif
 
 	// enable USART1
 	USART1->USART_CR1 |= USART1_EN;
-	initStructData(&_data);
 
 }
 
@@ -126,4 +127,3 @@ void processDataOfInterruptRx(myStruct *myData)
 		myData->haveData=false;
 	}
 }
-

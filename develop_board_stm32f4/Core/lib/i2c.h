@@ -34,7 +34,9 @@ typedef struct
 #define CR1_ACK         (1U << 10)
 #define CR1_STOP        (1U << 9)
 #define SR1_RXNE        (1U << 6)
+#define SR1_BTF			(1U << 2)
 
 void init_i2c1(void);
+void I2C1_byteRead(char saddr, char maddr, char *data);
 
 #endif

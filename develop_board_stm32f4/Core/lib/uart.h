@@ -13,6 +13,9 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "dma.h"
+#include <string.h>
+
 
 #include "../lib/exti.h"
 

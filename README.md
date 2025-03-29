@@ -172,3 +172,206 @@ nếu DMA và phép tính PEC cả hai đều được enabled:
 
 phép tính PEC sẽ bị hỏng do bị mất quyền điều khiển.
 
+# các bước để khởi tạo một I2C từ thanh ghi.
+1. Enable gpio sử dụng làm chân SCL và SDA
+2. chọn cấu hình alternate cho 2 chân đó trong thanh ghi GPIOx_MODER
+3. chọn output là open drain cho 2 chân đó
+4. kéo hai chân SCL và SDA là pull-up (nghĩa là điện trở kéo lên cho 2 chân này)
+5. set alternate funtion trong thanh ghi GPIOx_AFRL
+6. enable clock i2c
+7. set bit software reset i2c để release cái bus
+8. disable software reset i2c để bất đầu cấu hình
+9. chọn frequency cho protocol i2c
+10. chọn standard mode cho protocol i2c
+11. set 100khz cho protocol i2c
+12. set rise time cho i2c
+13. enable peripheral i2c.
+
+```c
+// PB8 - I2C1 SCL
+// PB9 - I2C1 SDA
+
+#define GPIOB_BASE_ADDR	0x40020400
+#define RCC_BASE_ADDR	0x40023800
+#define I2C1_BASE_ADDR	0x40005400
+
+void init_i2c1(void)
+{
+	// step 1
+	uint32_t *RCC_AHB1ENR = (uint32_t*)(RCC_BASE_ADDR + 0x30);
+	*RCC_AHB1ENR |= (1U << 1);
+
+	// step 2
+	uint32_t *GPIOB_MODER = (uint32_t*)(GPIOB_BASE_ADDR + 0x00);
+	*GPIOB_MODER |= (2U << 16) | (2U << 18);
+
+	// step 3
+	uint32_t *GPIOB_OTYPER = (uint32_t*)(GPIOB_BASE_ADDR + 0x04);
+	*GPIOB_OTYPER |= (1U << 8) | (1U << 9);
+
+	// step 4
+	uint32_t *GPIOB_PUPDR = (uint32_t*)(GPIOB_BASE_ADDR + 0x0C);
+	*GPIOB_PUPDR |= (1U << 16) | (1U << 18);
+
+	// step 5
+	uint32_t *GPIOB_AFRH = (uint32_t*)(GPIOB_BASE_ADDR + 0x24);
+	*GPIOB_AFRH |= (4U << 0) | (4U << 4);
+	
+	// step 6
+	uint32_t *RCC_APB1ENR = (uint32_t*)(RCC_BASE_ADDR + 0x40);
+	*RCC_APB1ENR |= (1U << 21);
+
+	// step 7
+	uint32_t *I2C1_CR1 = (uint32_t*)(I2C1_BASE_ADDR);
+	*I2C1_CR1 |= (1U << 15);
+	
+	// step 8
+	*I2C1_CR1 &= ~ (1U << 15);
+
+	// step 9
+	uint32_t *I2C1_CR2 = (uint32_t*)(I2C1_BASE_ADDR + 0x04);
+	*I2C1_CR2 |= (16 << 0);
+
+	// step 10
+	uint32_t *I2C1_CCR = (uint32_t*)(I2C1_BASE_ADDR + 0x1C);
+	*I2C1_CCR &= ~ (1U << 15);
+
+	// step 11
+	*I2C1_CCR |= (80 << 0);
+	
+	// step 12
+	uint32_t *I2C1_TRISE = (uint32_t*)(I2C1_BASE_ADDR + 0x20);
+	*I2C1_TRISE |= (17U << 0);
+	
+	// step 13
+	I2C1_CR1 |= (1U << 0);
+}
+
+
+
+```
+master receiver
+cái này là dành cho giao tiếp với cảm biến ADXL345
+các bước để đọc một bytes từ i2c master receiver
+
+input: 1 byte saddr, 1 byte maddr , data 
+output: non
+
+1. khởi tạo một biến volatile int tempory để đọc thanh ghi SR2
+2. chờ cho đến khi bit BUSY = 0
+3. tạo một điều kiện bắt đầu 
+4. chờ cho đến khi khi điều kiện tạo start được tạo bằng cách kiểm tra bit SB trong thanh ghi SR1
+5. ghi địa chỉ slave address vào thanh ghi DR
+6. chờ bit ADDR trong thanh ghi SR1 là 1
+7. đọc thanh ghi SR2 bằng cách gán nó vào biến tempory
+8. gửi memory address bằng cách ghi vào thanh ghi DR
+9. chờ bit SR1_TXE là 1 là truyền xong
+10. tạo lại điều kiện bắt đầu
+11. chờ bit SB trong thanh ghi SR1 là 1
+12. gửi địa chỉ slave với bit LSB là 1 (yêu cầu đọc)
+13. chờ chơ bit ADDR trong thanh ghi SR1 là 1
+14. disable ack 
+15. đọc thanh ghi SR2 để xóa bit ADDR 
+16. tạo điều kiện dừng set bit STOP trong thanh ghi CR1
+17. chờ cho bit RXNE trong thanh ghi SR1 là 1
+18. gán thanh ghi DR vào con trỏ data để lưu trữ dữ liệu đọc được.
+
+let's go
+
+```c
+void i2c_readByte(char saddr, char maddr, char *data)
+{
+	volatile int temp;
+	
+	uint32_t *I2C1_SR2 = (uint32_t*)(I2C1_BASE_ADDR + 0x18);
+	while(*I2C1_SR2 & (1U << 1));
+	
+	uint32_t *I2C1_CR1 = (uint32_t*)(I2C1_BASE_ADDR);
+	*I2C1_CR1 |= (1U << 8);
+
+	uint32_t *I2C1_SR1 = (uint32_t*)(I2C1_BASE_ADDR + 0x14);
+	while(!(*I2C1_SR1 & (1U << 0)));
+
+	uint32_t *I2C1_DR = (uint32_t*)(I2C1_BASE_ADDR + 0x10);
+	*I2C1_DR |= (saddr << 1);
+
+	while(!(*I2C1_SR1 & (1U << 1)));
+	temp = *I2C1_SR2;
+
+	*I2C1_DR = maddr;
+
+	while(!(*I2C1_SR1 & (1U << 7)));
+	
+	*I2C1_CR1 |= (1U << 8);
+	while(!(*I2C1_SR1 & (1U << 0)));
+	
+	*I2C1_DR = (saddr << 1) | 1;
+	while(!(*I2C1_SR1 & (1U << 1)));
+	temp = *I2C1_SR2;
+	
+	*I2C1_CR1 |= (1U << 10);
+	*I2C1_CR1 |= (1U << 9);
+
+	while(!(*I2C1_SR1 & (1U << 6)));
+	*data++ = *I2C1_DR;
+}
+
+
+```
+cách viết hàm burstRead i2c protocol
+
+input: 1 byte saddr , 1 byte maddr, 4 byte n , data
+output: none
+
+1. khởi tạo biến volatile int tempory.
+2. wait until bit BUSY in SR2 register into zero
+3. wait until bit SB in SR1 register into 1
+4. write saddr << 1 into DR register
+5. wait until bit ADDR in SR1 register into 1
+6. clear addr flag by assign SR2 register into tempory
+7. wait until bit TXE in SR1 register into 1
+8. assign maddr into DR register
+9. wait until bit TXE in SR1 register into 1
+10. generate restart by set bit START in CR1 register
+11. wait until bit SB in SR1 register into 1
+12. assign saddr with bit LSB is 1 (for read) into DR register
+13. wait until bit ADDR in SR1 register into 1
+14. clear bit ADDR by assign SR2 register into tempory
+15. enable bit ACK in CR1 register
+16. create loop with condition is n > 0U
+	inside loop 
+	compare if (n == 1U)
+	implementation: 
+	1. disable ack by clear bit ACK in CR1 register
+	2. generate STOP
+	3. wait bit RXNE in SR1 register into 1
+	4. assign DR register into data
+
+	else 
+	implementation:
+	1. wait bit RXNE in SR1 register into 1
+	2. assign DR register into data
+	3. n--
+
+
+triển khai một hàm i2c1_burstWrite 
+input: 1 byte saddr, 1 byte maddr, 4 byte size, pointer for data
+output: none
+
+1. initialise variable volatile integers tempory (for read SR2 register)
+2. generate start by set bit START inton CR1 register
+3. wait until bit SB in SR1 register into 1
+4. assign saddr << 1 into DR register
+5. wait until bit ADDR in SR1 register into 1
+6. clear bit ADDR by assign SR2 register into tempory
+7. wait until bit TXE in SR1 register into 1
+8. assign maddr into DR register
+9. create loop with condition 
+	for(int i = 0; i < n; i++)
+	{
+		implementation
+		1. wait until bit TXE in SR1 register into 1
+		2. assign data into DR 
+	}
+10. wait until bit BTF in SR1 register into 1
+

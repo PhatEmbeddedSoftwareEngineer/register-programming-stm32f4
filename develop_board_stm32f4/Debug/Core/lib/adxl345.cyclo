@@ -1,0 +1,4 @@
+../Core/lib/adxl345.c:13:6:adxl_read_address	1
+../Core/lib/adxl345.c:19:6:adxl_write	1
+../Core/lib/adxl345.c:26:6:adxl_read_values	1
+../Core/lib/adxl345.c:31:6:adxl_init	2

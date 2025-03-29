@@ -6,6 +6,7 @@
 "./Core/Src/system_stm32f4xx.o"
 "./Core/Startup/startup_stm32f401retx.o"
 "./Core/lib/adc.o"
+"./Core/lib/adxl345.o"
 "./Core/lib/dma.o"
 "./Core/lib/exti.o"
 "./Core/lib/i2c.o"

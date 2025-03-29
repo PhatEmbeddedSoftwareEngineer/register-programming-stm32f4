@@ -13,6 +13,7 @@
 #include "define.h"
 #include <stdbool.h>
 #include "exti.h"
+#include "uart.h"
 
 typedef struct
 {

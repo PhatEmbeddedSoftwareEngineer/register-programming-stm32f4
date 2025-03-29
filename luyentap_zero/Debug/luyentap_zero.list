@@ -685,6 +685,7 @@ int main(void)
  80005f4:	f7ff ff52 	bl	800049c <button_interrupt_init>
 	initUsart1();
  80005f8:	f7ff fe42 	bl	8000280 <initUsart1>
+	//int cnt = 0;
 	while(1)
  80005fc:	bf00      	nop
  80005fe:	e7fd      	b.n	80005fc <main+0x14>

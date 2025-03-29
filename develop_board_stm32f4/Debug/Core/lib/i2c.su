@@ -1,4 +1,4 @@
 ../Core/lib/i2c.c:3:6:init_i2c1	4	static
 ../Core/lib/i2c.c:58:6:I2C1_byteRead	24	static
-../Core/lib/i2c.c:127:6:I2C_burstRead	32	static
+../Core/lib/i2c.c:127:6:I2C1_burstRead	32	static
 ../Core/lib/i2c.c:204:6:I2C1_burstWrite	32	static

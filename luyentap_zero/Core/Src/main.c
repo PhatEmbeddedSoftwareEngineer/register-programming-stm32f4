@@ -181,8 +181,10 @@ int main(void)
 	initGpioPD15_output();
 	button_interrupt_init();
 	initUsart1();
+	//int cnt = 0;
 	while(1)
 	{
-
+		//cnt++;
+		//for(int i = 0; i < 100000;i++);
 	}
 }

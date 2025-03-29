@@ -124,7 +124,7 @@ void I2C1_byteRead(char saddr, char maddr, char *data)
 
 }
 
-void I2C_burstRead(char saddr, char maddr, int n, char *data)
+void I2C1_burstRead(char saddr, char maddr, int n, char *data)
 {
 	volatile int tmp;
 
@@ -206,7 +206,10 @@ void I2C1_burstWrite(char saddr, char maddr, int n, char *data)
 	volatile int tmp;
 
 	// wait until bus not busy
-	while(I2C1->I2C_SR2 & SR2_BUSY);
+	while(I2C1->I2C_SR2 & SR2_BUSY)
+	{
+		//myPrintf("on going..\n");
+	}
 
 	// generate start
 	I2C1->I2C_CR1 |= CR1_START;
@@ -239,6 +242,9 @@ void I2C1_burstWrite(char saddr, char maddr, int n, char *data)
 	}
 	// wait until transfer finished
 	while(!(I2C1->I2C_SR1 & SR1_BTF));
+	// generate stop
+	I2C1->I2C_CR1 |= CR1_STOP;
+
 }
 
 

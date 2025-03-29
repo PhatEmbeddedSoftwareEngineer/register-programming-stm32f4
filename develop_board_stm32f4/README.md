@@ -374,3 +374,474 @@ output: none
 	}
 10. wait until bit BTF in SR1 register into 1
 
+# document adxl345
+Document I2C ADXL345
+
+Khi chân CS được nối cao với VDD I/O, ADXL345 sẽ ở chế độ I2C, chỉ yêu cầu kết nối 2 dây đơn giản như hình mình họa trong hình 8.
+
+
+Nó hỗ trợ các chế độ truyền dữ liệu tiêu chuẩn (100 kHz) và nhanh (400 kHz) nếu các thông số thời gian được đưa ra trong **Bảng 11** và **Hình 10** được đáp ứng.
+
+table 11.
+
+1 Các giới hạn dựa trên kết quả đặc trưng, với fSCL = 400 kHz và dòng tiêu hao 3 mA; không được kiểm tra trong sản xuất.
+2 Tất cả các giá trị được tham chiếu đến các mức VIH và VIL được đưa ra trong Bảng 10.
+3 t6 là thời gian giữ dữ liệu được đo từ cạnh xuống của SCL. Nó áp dụng cho dữ liệu trong thời gian truyền và thời gian xác nhận.
+4 Một thiết bị truyền dữ liệu phải tự nội bộ cung cấp thời gian giữ đầu ra ít nhất 300 ns cho tín hiệu SDA (so với VIH(min) của tín hiệu SCL) để vượt qua vùng không xác định ở cạnh xuống của SCL.
+5 Giá trị tối đa của t6 chỉ cần được đáp ứng nếu thiết bị không kéo dài khoảng thời gian thấp (t3) của tín hiệu SCL.
+6 Giá trị tối đa của t6 là một hàm của thời gian mức thấp của xung đồng hồ (t3), thời gian tăng của xung đồng hồ (t10), và thời gian thiết lập dữ liệu tối thiểu (t5(min)). Giá trị này được tính bằng công thức t6(max) = t3 − t10 − t5(min).
+7 Cb là tổng điện dung của một đường dẫn bus, tính bằng picofarad.
+
+hình 10.
+
+giải thích bảng table 11
+Bảng mà bạn cung cấp mô tả các tham số thời gian của giao tiếp I²C trong một số điều kiện cụ thể: nhiệt độ 25°C (T_A), điện áp nguồn 2.5 V (V_S), và điện áp đầu vào/đầu ra là 1.8 V (V_DD I/O). Dưới đây là các thông tin chi tiết từ bảng:
+
+parameter là các thông số 
+Limit là giới hạn
+Min là giá trị min
+Max là giá trị max 
+Unit là đơn vị
+Description là mô tả
+
+fSCL có mô tả là : tần số xung nhịp SCL (clock)
+t1 : chu kỳ xung nhịp SCL(t_SCL)
+t2: thời gian SCL ở mức cao (t_high)
+t3: thời gian SCL ở mức thấp (t_low)
+t4: thời gian giữ trạng thái khởi đầu hoặc lặp lại (t_HD,STA)
+t5: thời gian thiết lập dữ liệu (t_SU,DAT)
+t6: thời gian giữ dữ liệu (t_HD,DAT)
+t7: thời gian thiết lập trạng thái lặp lại (t_SU,STA)
+t8: thời gian thiết lập trạng thái dừng (t_SU,STO)
+t9: thời gian trống giữa trạng thái dừng và khởi đầu (t_BUF)
+t10: thời gian tăng (rise time) của cả SCL và SDA khi nhận dữ liệu hoặc transmitting.
+t11: thời gian cạnh xuống của SDA khi nhận 
+	thời gian cạnh xuống của cả SCL và SDA khi truyền
+	thời gian cạnh xuống của cả SCL và SDA khi truyền hoặc nhận 
+	
+cb: tải điện dung của từng đường bus
+
+hỗ trợ đọc hoặc viết một byte hoặc nhiều byte như hình 9 
+
+giải thích hình số 9 I2C device addresing.
+
+Single-byte write (ghi 1 byte):
+1. Master gửi tín hiệu START
+2. gửi địa chỉ slave (slave address) kèm theo bit chỉ định "WRITE".
+3. Gửi địa chỉ thanh ghi (Register Address) để chỉ định nơi ghi dữ liệu
+4. Gửi dữ liệu (DATA)
+5. Kết thúc bằng tín hiệu STOP.
+
+Multiple-byte write (ghi nhiều byte)
+tương tự như ghi 1 byte, nhưng master có thể gửi liên tiếp nhiều dữ liệu trước khi kết thúc bằng tín hiệu STOP.
+
+thực hiện như sau:
+1. master gửi tín hiệu START
+2. gửi địa chỉ slave address + write
+3. gửi địa chỉ thanh ghi (register address) để chỉ định nơi ghi dữ liệu
+4. gửi dữ liệu data
+5. gửi dữ liệu data
+....
+kết thúc bằng tín hiệu STOP.
+
+Single-byte read (đọc 1 byte)
+follow step by step:
+1. master gửi tín hiệu START
+2. gửi địa chỉ SLAVE ADDRESS + WRITE
+3. gửi địa chỉ thanh ghi muốn đọc REGISTER ADDRESS
+4. gửi lại tín hiệu start là restart 
+5. gửi địa chỉ SLAVE ADDRESS + READ
+6. đọc dữ liệu
+7. gửi NACK và gửi STOP
+
+Multiple-byte read
+follow step by step:
+1. master gửi tín hiệu START
+2. gửi địa chỉ SLAVE ADDRESS + WRITE
+3. gửi địa chỉ thanh ghi cần đọc REGISTER ADDRESS
+4. gửi lại tín hiệu restart 
+5. gửi địa chỉ SLAVE ADDRESS + READ
+6. chờ đọc dữ liệu
+7. gửi ACK
+8. chờ đọc dữ liệu 
+9. gửi NACK + STOP.
+
+
+với chân SDO/ALT ADDRESS được đặt ở mức cao, địa chỉ I2C 7 bit của thiết bị là 0x1D, tiếp theo là bit R/W (đọc/ghi).
+
+Điều này được chuyển đổi thành 0x3A cho thao tác ghi và 0x3B cho thao tác đọc.
+Điều này có nghĩa là nếu bạn nối chân SDO/ALT ADDRESS (Pin 12) với đất (ground), thiết bị sẽ sử dụng địa chỉ I²C thay thế là 0x53. Địa chỉ này được sử dụng kèm với bit R/W (Đọc/Ghi) để xác định thao tác đọc hoặc ghi trên bus I²C.
+
+Điều này có nghĩa là khi sử dụng địa chỉ I2C thay thế 0x53 (khi chân SDO/ALT ADDRESS được nối đất), địa chỉ này sẽ được kết hợp với bit R/W để xác định thao tác cụ thể:
+- 0xA6 được sử dụng cho thao tác ghi (WRITE).
+- 0xA7 được sử dụng cho thao tác đọc (READ).
+
+cách tính: địa chỉ 7-bit 0x53 được chuyển thành 8 bit bằng cách thêm bit R/W ở vị trí bit 0.Bit R/W = 0 cho ghi, và R/W = 1 cho đọc. Điều này sẽ tạo ra địa chỉ 8 bit là 0xA6 (ghi) và 0xA7(đọc).
+
+Điều này có nghĩa là nếu trên cùng một bus I²C có các thiết bị khác được kết nối, mức điện áp hoạt động danh định (nominal operating voltage) của các thiết bị đó không được vượt quá mức điện áp VDD I/O của thiết bị đang đề cập quá 0.3 V.
+
+Lý do của giới hạn này:
+
+Đảm bảo tương thích điện áp giữa các thiết bị trên cùng bus I²C.
+
+Ngăn ngừa hư hỏng thiết bị hoặc gây nhiễu tín hiệu khi các mức điện áp không đồng nhất.
+
+Ví dụ: Nếu VDD I/O của thiết bị chính (master) là 3.3 V, các thiết bị khác trên bus không được có mức điện áp hoạt động danh định vượt quá 3.6 V (3.3 V + 0.3 V). Điều này đảm bảo tất cả thiết bị hoạt động ổn định trong cùng hệ thống.
+
+register map 
+giải thích cách dùng bảng register map 
+địa chỉ của thanh ghi gồm hai địa chỉ là địa chỉ hexa và địa chỉ dec
+
+1. thanh ghi DEVID 
+address: 0x00
+type: R
+reset value: 1110 0101
+description: Device ID
+
+2. thanh ghi THRESH_TAP
+address: 0x1D
+type: R/W
+reset vlaue: 0000 0000
+deteils: tap threshold
+giải thích: ngưỡng này giúp phát hiện một hành đồng "gõ" hoặc "chạm" có diễn ra hay không ? có thể dùng để loại bỏ các hành động "gõ" hoặc thực hiện một chức năng phản ứng khi có hành động "rõ".
+
+3. thanh ghi OFSX
+address: 0x1E
+type: R/W 
+reset value: 0000 0000
+deteils: X-axis offset (bù trục x)
+giải thích: Bù trục X (X-axis offset) là một giá trị được sử dụng để hiệu chỉnh sai lệch hoặc độ lệch không mong muốn trên trục X trong các thiết bị cảm biến, như gia tốc kế hoặc con quay hồi chuyển
+Trong thực tế, các cảm biến có thể không hoàn hảo và có thể xuất hiện sai số ở vị trí "không" (zero point) của từng trục. Ví dụ, khi thiết bị nằm yên hoàn toàn, giá trị đo trên trục X có thể không phải là 0 như mong đợi mà có một giá trị nhỏ hơn hoặc lớn hơn, đó gọi là độ lệch (offset).
+
+Giá trị bù trục X giúp hiệu chỉnh lại sai lệch này bằng cách cộng hoặc trừ một giá trị cụ thể để đưa điểm "không" (zero) về đúng vị trí.
+
+4. thanh ghi OFSY
+addr: 0x1F
+type: R/W
+reset value: 0000 0000
+deteils: Y-axis offset
+
+5. thanh ghi OFSZ
+addr: 0x20
+type: R/W 
+reset value: 0000 0000
+deteils: Z-axis offset
+
+6. thanh ghi DUR
+addr: 0x21
+type: R/W
+reset value: 0000 0000
+deteils: Tap duration. 
+Tap Duration (thời gian gõ) là một tham số quan trọng được sử dụng để xác định khoảng thời gian tối đa mà một cú gõ (tap) được coi là hợp lệ.
+
+7. thanh ghi Latent
+addr: 0x22 
+type: R/W
+reset value: 0000 0000
+deteils: Tap latency. 
+Tap latency là khoảng thời gian tối thiểu giữa hai cú gõ (tap) liên tiếp để chúng được coi là các sự kiện riêng biệt. Tham số này được sử dụng trong cảm biến, chẳng hạn như gia tốc kế ADXL345, để tránh nhầm lẫn giữa một cú gõ đơn và các chuỗi gõ liên tiếp như gõ đôi (double tap).
+
+8. thanh ghi Window
+addr: 0x23
+type: R/W
+reset value: 0000 0000
+deteils: tap window
+Tap Window là khoảng thời gian cho phép nhận diện cú gõ thứ hai (tap) sau cú gõ đầu tiên trong các thao tác như gõ đôi (double tap). Đây là một tham số quan trọng trong cảm biến, ví dụ như gia tốc kế ADXL345, dùng để phân biệt gõ đơn và gõ đôi.
+
+9. thanh ghi THRESH_ACT
+addr: 0x24
+type: R/W
+reset value: 0000 0000
+deteils: Activity threshold.
+Activity threshold (Ngưỡng hoạt động) trong cảm biến gia tốc, chẳng hạn như ADXL345, là một giá trị được sử dụng để xác định ngưỡng gia tốc tối thiểu để cảm biến nhận diện rằng thiết bị đang hoạt động hoặc chuyển động.
+
+10. thanh ghi THRESH_INACT
+addr: 0x25
+type: R/W
+reset value: 0000 0000
+deteils: Inactivity threshold. 
+Inactivity threshold (Ngưỡng không hoạt động) trong cảm biến, chẳng hạn như ADXL345, là một giá trị được đặt để xác định trạng thái không chuyển động của thiết bị. Nó giúp cảm biến nhận biết khi nào thiết bị đang ở trạng thái tĩnh hoặc ít chuyển động, từ đó có thể kích hoạt các hành động như chuyển sang chế độ tiết kiệm năng lượng.
+
+11. thanh ghi TIME_INACT
+addr: 0x26
+type: R/W
+reset value: 0000 0000
+deteils: Inactivity time.
+Inactivity time (Thời gian không hoạt động) là khoảng thời gian mà gia tốc trên tất cả các trục (X, Y, và Z) phải duy trì ở dưới mức Inactivity Threshold (Ngưỡng không hoạt động) để cảm biến nhận diện rằng thiết bị đang ở trạng thái không hoạt động.\
+
+12. thanh ghi ACT_INACT_CTL
+addr: 0x27
+type: R/W
+reset value: 0000 0000
+deteils: Axis enable control for activity and inactivity detection. (Điều khiển kích hoạt trục để phát hiện hoạt động và không hoạt động.)
+Axis enable control for activity and inactivity detection nghĩa là việc kiểm soát kích hoạt các trục (X, Y, Z) để phát hiện hoạt động và không hoạt động của thiết bị. Đây là cách mà cảm biến, chẳng hạn như ADXL345, cho phép bạn chọn những trục nào sẽ được theo dõi khi phát hiện trạng thái hoạt động hoặc không hoạt động.
+
+13. thanh ghi THRESH_FF
+addr: 0x28
+type: R/W
+reset value: 0000 0000
+deteils: Free-fall threshold. (Ngưỡng rơi tự do.)
+Free-fall threshold (Ngưỡng rơi tự do) là một giá trị được sử dụng trong các cảm biến, như gia tốc kế ADXL345, để xác định khi thiết bị đang trong trạng thái rơi tự do. Trong trạng thái này, cảm biến nhận thấy không còn gia tốc nào đáng kể được áp dụng (ngoài lực hấp dẫn) trên các trục X, Y, và Z.
+
+14. thanh ghi TIME_FF
+addr: 0x29
+type: R/W
+reset value: 0000 0000
+deteils: Free-fall time. (Thời gian để xác định là đang bị rơi tự do)
+Free-fall time (Thời gian rơi tự do) là khoảng thời gian mà cảm biến, chẳng hạn như ADXL345, xác định rằng gia tốc trên tất cả các trục (X, Y, và Z) đều ở dưới mức ngưỡng rơi tự do (Free-fall threshold). Đây là tham số quan trọng giúp cảm biến quyết định khi nào thiết bị thực sự ở trạng thái rơi tự do.
+
+15. thanh ghi TAP_AXES
+addr: 0x2A
+type: R/W
+reset value: 0000 0000
+deteils: Axis control for tap/double tap. (Điều khiển trục cho gõ/nhấn đúp.)
+Axis control for tap/double tap đề cập đến việc kiểm soát các trục (X, Y, Z) mà cảm biến sẽ theo dõi để phát hiện sự kiện gõ (tap) hoặc nhấn đúp (double tap). Điều này giúp lập trình viên lựa chọn cụ thể các trục cần giám sát khi kích hoạt tính năng cảm ứng gõ/nhấn.
+
+16. thanh ghi ACT_TAP_STATUS
+addr: 0x2B
+type: R
+reset value: 0000 0000
+deteils:Source of tap/double tap. (Nguồn gốc của gõ/nhấn đúp.)
+Source of tap/double tap (Nguồn gốc của gõ/nhấn đúp) đề cập đến việc xác định trục hoặc hướng cụ thể (X, Y, Z) đã tạo ra sự kiện gõ hoặc nhấn đúp. Trong cảm biến gia tốc như ADXL345, thông tin này giúp bạn biết được cú gõ hoặc nhấn đúp được phát hiện từ trục nào.
+
+17. thanh ghi BW_RATE
+addr: 0x2C
+type: R/W
+reset value: 00001010
+deteils: Data rate and power mode control. (Điều khiển tốc độ dữ liệu và chế độ tiêu thụ năng lượng.)
+Data rate and power mode control là cơ chế trong cảm biến, như ADXL345, được sử dụng để thiết lập:
+Tốc độ truyền dữ liệu (Data rate): Quyết định tần suất cảm biến cập nhật dữ liệu gia tốc.
+Chế độ tiêu thụ năng lượng (Power mode): Liên quan đến mức năng lượng mà cảm biến sử dụng tùy thuộc vào cài đặt và nhu cầu hoạt động.
+
+18. thanh ghi POWER_CTL
+addr: 0x2D
+type: R/W
+reset value: 0000 0000
+deteils: Power-saving features control.  (Điều khiển các tính năng tiết kiệm năng lượng)
+Power-saving features control đề cập đến các cơ chế hoặc cấu hình trong cảm biến, chẳng hạn như ADXL345, cho phép thiết bị tiết kiệm năng lượng khi không cần hoạt động liên tục hoặc khi ở trạng thái tĩnh.
+
+19. thanh ghi INT_ENABLE
+addr: 0x2E
+type: R/W
+reset value: 0000 0000
+deteils: Interrupt enable control. (điều khiển kích hoạt ngắt)
+Interrupt enable control là cơ chế cho phép lập trình viên kích hoạt hoặc vô hiệu hóa các tín hiệu ngắt (interrupts) trên cảm biến, chẳng hạn như ADXL345. Các ngắt này được sử dụng để thông báo cho bộ vi xử lý (microcontroller) về các sự kiện cụ thể được phát hiện bởi cảm biến, như chuyển động, gõ, hoặc trạng thái rơi tự do.
+
+20. thanh ghi INT_MAP
+addr: 0x2F
+type: R/W
+reset value: 0000 0000
+deteils: Interrupt mapping control. (điều khiển ánh xạ ngắt)
+Interrupt mapping control liên quan đến việc gán (mapping) các ngắt (interrupts) đến một chân (pin) đầu ra cụ thể của cảm biến, chẳng hạn như cảm biến ADXL345. Điều này cho phép bạn tùy chỉnh cách mà các ngắt được báo hiệu tới bộ vi xử lý (microcontroller) hoặc hệ thống điều khiển.
+
+21. thanh ghi INT_SOURCE
+addr: 0x30
+type: R
+reset value: 00000010
+deteils: Source of interrupts.  (Nguồn gốc của ngắt.)
+Source of interrupts (Nguồn gốc của ngắt) đề cập đến việc xác định sự kiện hoặc trạng thái nào đã kích hoạt một tín hiệu ngắt (interrupt) trong cảm biến, chẳng hạn như ADXL345. Thông tin này rất quan trọng để hiểu lý do tại sao ngắt được kích hoạt và để hệ thống có thể xử lý sự kiện tương ứng.
+
+22. thanh ghi DATA_FORMAT
+addr: 0x31
+type: R/W
+reset value: 00000000
+deteils: Data format control. (Điều khiển định dạng dữ liệu.)
+Data format control (Điều khiển định dạng dữ liệu) đề cập đến việc cấu hình cách dữ liệu được biểu diễn hoặc xuất ra từ cảm biến, chẳng hạn như ADXL345. Điều này bao gồm định dạng, độ phân giải, chế độ dữ liệu và căn chỉnh dữ liệu.
+
+23. thanh ghi DATAX0
+addr: 0x32
+type: R
+reset value: 00000000
+deteils: X-Axis Data 0. (Dữ liệu trục X - Byte 0)
+X-Axis Data 0 trong cảm biến như ADXL345 đại diện cho byte đầu tiên (byte thấp hơn - Least Significant Byte, LSB) trong dữ liệu gia tốc thu được từ trục X. Đây là một phần của dữ liệu 16-bit biểu diễn giá trị gia tốc trên trục X.
+
+24. thanh ghi DATAX1
+addr: 0x33
+type: R
+reset value: 00000000
+deteils: X-Axis Data 1.  
+note: gộp 2 thanh ghi này lại ta có giá trị của trục x 16 bit
+
+25. thanh ghi DATAY0
+addr: 0x34
+type: R
+reset value: 00000000
+deteils: Y-Axis Data 0. 
+
+26. thanh ghi DATAY1
+addr: 0x35
+type: R
+reset value: 00000000
+deteils: Y-Axis Data 1.
+
+27. thanh ghi  DATAZ0
+addr: 0x36
+type: R
+reset value:  00000000
+deteils: Z-Axis Data 0.
+
+28. thanh ghi DATAZ1
+addr: 0x37
+type: R
+reset value: 00000000
+deteils: Z-Axis Data 1.
+
+29. thanh ghi FIFO_CTL
+addr: 0x38
+type: R/W
+reset value: 00000000
+deteils: FIFO control. 
+FIFO control (Điều khiển FIFO) đề cập đến việc cấu hình và quản lý bộ đệm FIFO (First In, First Out) trong các cảm biến như ADXL345. FIFO là một cơ chế lưu trữ tạm thời dữ liệu, giúp giảm tải cho bộ vi xử lý bằng cách lưu trữ dữ liệu đầu ra của cảm biến trước khi chúng được xử lý hoặc đọc.
+
+30. thanh ghi FIFO_STATUS
+addr: 0x39
+type: R
+reset value: 00000000
+deteils: FIFO status. 
+FIFO status (Trạng thái FIFO) trong cảm biến như ADXL345 cung cấp thông tin về trạng thái hiện tại của bộ đệm FIFO (First In, First Out). Nó cho phép bạn theo dõi số lượng dữ liệu đã được lưu trữ trong bộ đệm và phát hiện các tình trạng như đầy bộ đệm hoặc dữ liệu bị tràn.
+
+//////////////////////////////////////////
+
+REGISTER DEFINITIONS (định nghĩa các thanh ghi)
+Register 0x00-DEVID (Read Only)
+______________________________________
+D7 | D6 | D5 | D4 | D3 | D2 | D1 | D0 |
+___|____|____|____|____|____|____|____|
+1  |  1 |   1|  0 | 0  | 1  | 0  |  1 |
+___|____|____|____|____|____|____|____|
+
+
+Thanh ghi DEVID lưu trữ một mã định danh thiết bị cố định là 0xE5 (345 hệ bát phân).
+
+Khi bắt đầu kết nối đến thiết bị qua giao tiếp I2C thì mình có thể đọc giá trị của thanh ghi này để xác định xem là có phải đúng là thiết bị ADXL345 hay không vì nếu đúng thì nó sẽ trả về 0xE5 tương ứng với giá trị 345 trong hệ bát phân
+
+Register 0x31 - DATA FORMAT (Read/Write)
+____________________________________________________________________
+D7        | D6   | D5          | D4 | D3       | D2       | D1 | D0 |
+__________|______|_____________|____|__________|__________|____|____|
+SELF_TEST |  SPI |   INT_INVERT|  0 |   FUL_RES|  Justify |   Range |
+__________|______|_____________|____|__________|__________|_________|
+
+Thanh ghi DATA_FORMAT kiểm soát cách dữ liệu được trình bày từ thanh ghi 0x32 đến thanh ghi 0x37. Tất cả dữ liệu, ngoại trừ dữ liệu trong dải ±16 g, phải được cắt bớt để tránh hiện tượng tràn số (rollover).
+
+Giải thích:
+1.Thanh ghi DATA_FORMAT:
+- Đây là thanh ghi trong cảm biến ADXL345 được sử dụng để định cấu hình cách dữ liệu 	gia tốc được trình bày.
+
+- Dữ liệu được xuất ra từ các thanh ghi DATAX0 (0x32) đến DATAZ1 (0x37), tương ứng 	với giá trị gia tốc trên các trục X, Y, và Z.
+
+2. Quy tắc về giới hạn dữ liệu (Clipping):
+- Dữ liệu từ cảm biến phải nằm trong khoảng hợp lệ, tùy thuộc vào dải đo được chọn (±	2g, ±4g, ±8g, hoặc ±16g).
+
+- Với các dải ±2g, ±4g, và ±8g, nếu giá trị vượt ra ngoài phạm vi, dữ liệu phải được "cắt bớt" (clipped) để tránh hiện tượng tràn số (rollover).
+
+- Hiện tượng tràn số xảy ra khi giá trị dữ liệu vượt quá giới hạn mà nó có thể lưu trữ, dẫn đến kết quả không chính xác.
+
+3. Dải đo ±16g:
+- Trong trường hợp dải ±16g, dữ liệu không cần bị cắt bớt vì đây là dải rộng nhất và có thể chứa toàn bộ các giá trị gia tốc mà cảm biến có thể đo được
+
+4. Ứng dụng thực tế:
+- Đảm bảo độ chính xác: Việc cắt bớt dữ liệu ngoài phạm vi giúp ngăn chặn các lỗi đo lường.
+- Tùy chỉnh dải đo: Lựa chọn và cấu hình dải đo phù hợp giúp tối ưu hóa hiệu suất cảm biến trong các ứng dụng cụ thể, ví dụ:
+±2g: Nhạy cảm với các chuyển động nhỏ.
+±16g: Đo chuyển động mạnh, chẳng hạn như rung động lớn.
+
+giải thích các bit.
+
+SELF_TEST Bit 
+set bit này là 1 sẽ áp dụng tự kiểm tra SELT_TEST lên cảm biến, làm thay đổi dữ liệu đầu ra. set 0 sẽ disable feature này. 
+bit này dùng trong kiểm thử thiết bị
+
+SPI Bit 
+Giá trị 1 trong bit SPI đặt thiết bị ở chế độ SPI 3 dây, còn giá trị 0 đặt thiết bị ở chế độ SPI 4 dây.
+
+INT_INVERT Bit 
+Giá trị 0 trong bit INT_INVERT đặt ngắt (interrupts) ở trạng thái hoạt động mức cao (active high), còn giá trị 1 đặt ngắt ở trạng thái hoạt động mức thấp (active low).
+
+FULL_RES Bit
+
+Khi bit này được đặt giá trị 1, thiết bị ở chế độ độ phân giải đầy đủ (full resolution mode), trong đó độ phân giải đầu ra tăng theo dải gia tốc g được cài đặt bởi các bit phạm vi (range bits), duy trì hệ số tỷ lệ 4 mg/LSB. Khi bit FULL_RES được đặt giá trị 0, thiết bị ở chế độ 10-bit, và các bit phạm vi xác định dải g tối đa cũng như hệ số tỷ lệ.
+
+set bit này là 1 nó sẽ tự động điều chỉnh độ phân giải theo dải gia tốc g được cài đặt bởi các bit phạm vi, duy trì hệ số tỷ lệ 4 mg/LSB. 
+bit này = 0 thì nó sẽ cố định độ phân giải là 10 bit và nó sẽ phụ thuộc vào nhiều hơn về range của g do đó nó chỉ phù hợp với một vài trường hợp nhất định như tiết kiệm năng lượng.
+
+Justify Bit 
+
+Cài đặt giá trị 1 trong bit justify chọn chế độ căn chỉnh về bên trái (left-justified) với phần quan trọng nhất (MSB - Most Significant Bit) ở đầu. Cài đặt giá trị 0 chọn chế độ căn chỉnh về bên phải (right-justified) kèm theo phần mở rộng dấu (sign extension).
+
+căn chỉnh bên trái các bit quan trọng sẽ là MSB các bit khác sẽ được lắp đầy là 0
+ví dụ nếu dữ liệu cảm biến là 6 bit: 101101 
+thì dữ liệu output là: 10110100
+
+nếu trường hợp căn chỉnh bên phải thì đầu ra sẽ như sau nếu dữ liệu nguyên thủy là -3 thì kết quả đầu ra là 1111 1101.
+
+Range Bits 
+
+D1 | D0      | g Range
+0  |  0      |   +- 2g
+0  |  1      |   +- 4g
+1  |  0      |   +- 8g
+1  |  1      |   +- 16g
+
+giải thích thanh ghi POWER_CTL
+
+Register 0x2D - POWER_CTL (Read/Write)
+______________________________________________________
+D7 | D6 | D5  | D4          | D3     | D2   | D1 | D0 |
+___|____|_____|_____________|________|______|____|____|
+0  | 0  | Link| AUTO_SLEEP  | Measure| Sleep| Wakeup  |
+___|____|_____|_____________|________|______|_________|
+
+Link Bit 
+Khi bit link được đặt giá trị 1, và cả hai chức năng hoạt động (activity) và không hoạt động (inactivity) được kích hoạt, thì chức năng hoạt động sẽ bị trì hoãn cho đến khi không hoạt động được phát hiện. Sau khi hoạt động được phát hiện, chế độ phát hiện không hoạt động sẽ bắt đầu, ngăn cản việc phát hiện hoạt động. Bit này liên kết tuần tự hai chức năng hoạt động và không hoạt động. Khi bit này được đặt giá trị 0, các chức năng không hoạt động và hoạt động hoạt động đồng thời. Thông tin bổ sung có thể được tìm thấy trong phần Link Mode. Khi xóa giá trị của bit link, nên đặt thiết bị vào chế độ chờ (standby mode) và sau đó chuyển lại về chế độ đo lường (measurement mode) bằng một thao tác ghi tiếp theo. Điều này được thực hiện để đảm bảo rằng thiết bị được bù chính xác nếu chế độ ngủ (sleep mode) bị vô hiệu hóa thủ công; nếu không, vài mẫu dữ liệu đầu tiên sau khi bit link bị xóa có thể chứa thêm nhiễu, đặc biệt nếu thiết bị đang ở trạng thái ngủ khi bit được xóa.
+
+Giải thích chi tiết:
+Bit link và chức năng tuần tự (Serial Linking):
+- Khi link bit = 1, các chức năng hoạt động (activity) và không hoạt động (inactivity) được kích hoạt tuần tự:
+- Đầu tiên, chế độ activity không được kích hoạt cho đến khi trạng thái không hoạt động (inactivity) được phát hiện.
+- Sau khi trạng thái không hoạt động chuyển thành hoạt động (activity), chế độ không hoạt động sẽ tự động bắt đầu.
+- Điều này đảm bảo rằng hai chức năng không xung đột và chỉ một trạng thái được phát hiện tại một thời điểm.
+
+Chức năng đồng thời (Concurrent):
+- Khi link bit = 0, hai chức năng hoạt động và không hoạt động hoạt động đồng thời. Điều này cho phép thiết bị giám sát cả hai trạng thái một cách độc lập mà không cần tuần tự hóa.
+
+Cách xử lý khi xóa bit link:
+- Chuyển chế độ Standby trước khi xóa link bit:
+  *Đặt thiết bị vào chế độ chờ sẽ đảm bảo các thành phần bên trong cảm biến được ổn định lại.
+- Trở về chế độ đo lường:
+* Sau khi xóa bit, chế độ đo lường được kích hoạt lại để tiếp tục thu thập dữ liệu.
+- Tránh nhiễu ban đầu:
+* Nếu thiết bị đang ở chế độ ngủ khi xóa bit mà không tuân theo quy trình chuẩn, dữ liệu đầu ra có thể chứa nhiễu.
+
+AUTO_SLEEP Bit (bit tự động ngủ)
+
+Nếu link bit được đặt, việc đặt giá trị 1 trong bit AUTO_SLEEP sẽ cho phép ADXL345 tự động chuyển sang chế độ ngủ (sleep mode) khi trạng thái không hoạt động (inactivity) được phát hiện (tức là khi gia tốc thấp hơn giá trị THRESH_INACT trong ít nhất khoảng thời gian được chỉ định bởi TIME_INACT). Việc đặt giá trị 0 sẽ tắt tính năng tự động chuyển sang chế độ ngủ. Xem phần mô tả về sleep bit trong tài liệu này để biết thêm thông tin. Khi xóa giá trị của bit AUTO_SLEEP, nên đặt thiết bị vào chế độ chờ (standby mode) và sau đó đưa trở lại chế độ đo (measurement mode) bằng một thao tác ghi tiếp theo. Điều này đảm bảo rằng thiết bị được bù chính xác nếu chế độ ngủ bị vô hiệu hóa thủ công; nếu không, vài mẫu dữ liệu đầu tiên sau khi xóa AUTO_SLEEP có thể chứa thêm nhiễu, đặc biệt nếu thiết bị đang ở chế độ ngủ khi bit được xóa. 
+
+Giải thích chi tiết:
+1. Tự động chuyển chế độ ngủ (AUTO_SLEEP)
+Khi AUTO_SLEEP bit = 1:
+- Cảm biến sẽ giám sát trạng thái gia tốc. Nếu gia tốc thấp hơn ngưỡng không hoạt động (THRESH_INACT) trong khoảng thời gian tối thiểu (TIME_INACT), cảm biến tự động chuyển sang chế độ ngủ (sleep mode).
+- Chế độ ngủ giúp giảm mức tiêu thụ năng lượng.
+Khi AUTO_SLEEP bit = 0:
+- Chức năng chuyển sang chế độ ngủ tự động bị vô hiệu hóa. Cảm biến sẽ không chuyển sang chế độ ngủ dù trạng thái không hoạt động được phát hiện.
+
+2. Liên kết với link bit:
+- Link bit cho phép kết hợp chức năng hoạt động (activity) và không hoạt động (inactivity). Nếu link bit = 1, tính năng tự động ngủ sẽ được kích hoạt khi cảm biến phát hiện trạng thái không hoạt động.
+
+3.Lưu ý khi xóa AUTO_SLEEP bit:
+Chuyển sang chế độ Standby:
+- Điều này cần thiết để đảm bảo các linh kiện bên trong cảm biến được bù chính xác, đặc biệt khi chế độ ngủ bị tắt thủ công.
+
+Quay lại chế độ đo lường:
+- Sau khi chỉnh sửa AUTO_SLEEP bit, chuyển cảm biến trở lại chế độ đo lường để hoạt động chính xác.
+
+Tránh nhiễu ban đầu:
+- Nếu cảm biến đang trong chế độ ngủ khi xóa AUTO_SLEEP bit mà không qua chế độ standby, dữ liệu đầu ra ban đầu có thể chứa nhiễu.
+
+Measure Bit (bit đo lường)
+
+Cài đặt giá trị 0 trong bit measure đưa thiết bị vào chế độ chờ (standby mode), và cài đặt giá trị 1 đưa thiết bị vào chế độ đo lường (measurement mode). Cảm biến ADXL345 khởi động ở chế độ chờ với mức tiêu thụ năng lượng tối thiểu.
+
+
+
+
